@@ -14,7 +14,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@rng-associates/admin-layout": ["libs/admin-layout/src/index.ts"],
+      "@rng-associates/dashboard-layout": [
+        "libs/dashboard-layout/src/index.tsx"
+      ],
+      "@rng-associates/firesource": ["libs/firesource/src/index.ts"],
+      "@rng-associates/forms": ["libs/forms/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

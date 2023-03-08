@@ -1,11 +1,20 @@
-import { Container, Header, Title } from '@mantine/core';
+import { Box, Container, Title } from '@mantine/core';
 import { useLayoutContext } from './context';
 import { AdminHeaderProps } from './types';
 
 const AdminHeader: React.FC<AdminHeaderProps> = () => {
   const { appName } = useLayoutContext();
   return (
-    <Header height={72}>
+    <Box
+      sx={(t) => ({
+        flex: '0 0 72px',
+        position: 'sticky',
+        top: 0,
+        left: 0,
+        zIndex: 1,
+        background: t.colors.gray[1],
+      })}
+    >
       <Container
         fluid
         sx={{
@@ -13,12 +22,11 @@ const AdminHeader: React.FC<AdminHeaderProps> = () => {
           alignItems: 'center',
           gap: '0.75rem',
           height: '100%',
-          background: '#F5F5F5',
         }}
       >
         <Title order={3}>{appName}</Title>
       </Container>
-    </Header>
+    </Box>
   );
 };
 export default AdminHeader;

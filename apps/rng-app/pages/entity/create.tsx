@@ -1,4 +1,3 @@
-import { Container } from '@mantine/core';
 import { lazy } from 'react';
 
 const CreateEntityForm = lazy(
@@ -6,10 +5,6 @@ const CreateEntityForm = lazy(
 );
 
 function CreateEntityPage() {
-  return (
-    <Container size="xs">
-      <CreateEntityForm />
-    </Container>
-  );
+  return <CreateEntityForm />;
 }
 export default CreateEntityPage;

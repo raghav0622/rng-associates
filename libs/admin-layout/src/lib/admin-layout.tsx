@@ -1,4 +1,4 @@
-import { AppShell, MantineProvider } from '@mantine/core';
+import { Box, MantineProvider } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import AdminDrawer from './helpers/admin-drawer';
@@ -27,24 +27,35 @@ export const AdminLayout: React.FC<
         },
       }}
     >
-      <MantineProvider withNormalizeCSS>
+      <MantineProvider
+        withNormalizeCSS
+        theme={{
+          globalStyles: (theme) => ({
+            '#__next': {
+              width: '100vw',
+              height: '100vh',
+              maxWidth: '100vw',
+              maxHeight: '100vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            },
+          }),
+        }}
+      >
         <Notifications />
         <RouterTransition />
-        <AppShell
-          padding="md"
-          navbarOffsetBreakpoint="sm"
-          navbar={<AdminNavbar />}
-          header={<AdminHeader />}
-          styles={(theme) => ({
-            main: {
-              backgroundColor: theme.colors.gray[2],
-              position: 'relative',
-            },
-          })}
+        <AdminHeader />
+        <Box
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            height: 'calc(100% - 72px)',
+          }}
         >
-          {/* <Suspense fallback={<LoadingOverlay visible />}>{children}</Suspense> */}
-          {children}
-        </AppShell>
+          <AdminNavbar />
+          <Box>{children}</Box>
+        </Box>
         {isMobile && <AdminDrawer />}
       </MantineProvider>
     </AdminLayoutContext.Provider>

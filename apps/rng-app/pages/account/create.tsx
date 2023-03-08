@@ -1,4 +1,3 @@
-import { Container } from '@mantine/core';
 import { lazy } from 'react';
 
 const CreateForm = lazy(
@@ -6,10 +5,6 @@ const CreateForm = lazy(
 );
 
 function CreateAccountPage() {
-  return (
-    <Container size="xs">
-      <CreateForm />
-    </Container>
-  );
+  return <CreateForm />;
 }
 export default CreateAccountPage;

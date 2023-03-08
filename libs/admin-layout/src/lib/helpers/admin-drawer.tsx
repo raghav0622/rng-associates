@@ -36,8 +36,10 @@ export const AdminDrawer: React.FC<AdminNavbarProps> = () => {
         size="lg"
         title={appName}
         styles={{
-          drawer: {
-            height: '70vh',
+          header: { backgroundColor: 'white', zIndex: 200 },
+
+          content: {
+            height: '65vh',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',

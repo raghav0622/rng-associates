@@ -1,4 +1,3 @@
-import { Container } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { lazy } from 'react';
 
@@ -11,12 +10,8 @@ function CreateAccountPage() {
   const { pid } = router.query;
 
   if (pid !== undefined && typeof pid === 'string') {
-    return (
-      <Container size="xs">
-        <EditForm id={pid} />
-      </Container>
-    );
+    return <EditForm id={pid} />;
   }
-  return <Container size="lg">Error 404</Container>;
+  return <>Error 404</>;
 }
 export default CreateAccountPage;

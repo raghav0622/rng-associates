@@ -1,4 +1,4 @@
-import { Navbar, ScrollArea } from '@mantine/core';
+import { Box, ScrollArea } from '@mantine/core';
 import { useLayoutContext } from './context';
 import { AdminNavbarProps } from './types';
 
@@ -6,17 +6,21 @@ export const AdminNavbar: React.FC<AdminNavbarProps> = () => {
   const { navlinks } = useLayoutContext();
 
   return (
-    <Navbar
-      hiddenBreakpoint="md"
-      hidden
-      p="sm"
-      width={{ base: 300 }}
-      bg="#F5F5F5"
+    <Box
+      sx={(t) => ({
+        height: '100%',
+        flex: '0 0 300px',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: t.colors.gray[1],
+
+        [`@media (max-width: ${t.breakpoints.sm})`]: {
+          display: 'none',
+        },
+      })}
     >
-      <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs" py="sm">
-        {navlinks}
-      </Navbar.Section>
-    </Navbar>
+      <ScrollArea p="md">{navlinks}</ScrollArea>
+    </Box>
   );
 };
 export default AdminNavbar;

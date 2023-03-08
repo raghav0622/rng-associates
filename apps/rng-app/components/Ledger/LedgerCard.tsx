@@ -1,9 +1,7 @@
 import {
   ActionIcon,
-  Button,
   Card,
   Chip,
-  CopyButton,
   createStyles,
   Group,
   rem,
@@ -11,14 +9,13 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconCopy, IconTrash } from '@tabler/icons';
-import Link from 'next/link';
+import { IconTrash } from '@tabler/icons';
 import {
-  Account,
   APIErrorNotification,
+  Ledger,
   numberToCurrency,
-  useAccountAPI,
   useEntityDataById,
+  useLedgerAPI,
 } from '../../resources';
 
 const useStyles = createStyles((theme) => ({
@@ -46,17 +43,15 @@ const useStyles = createStyles((theme) => ({
 }));
 
 function AccountCard({
-  accountNumber,
-  bankName,
+  balance,
+  category,
   id,
-  ifscCode,
-  nickName,
+  name,
   owner,
   type,
-  branchAddress,
   displayOwner,
-}: Account & { displayOwner?: boolean }) {
-  const { remove } = useAccountAPI();
+}: Ledger & { displayOwner?: boolean }) {
+  const { remove } = useLedgerAPI();
   const ownerData = useEntityDataById(owner);
   const { classes } = useStyles();
 
@@ -65,7 +60,7 @@ function AccountCard({
       <Card.Section className={classes.section} mt="lg">
         <Group position="apart" align={'center'}>
           <Text fz="lg" fw={500}>
-            {nickName}
+            {name}
           </Text>
           {displayOwner && (
             <Chip size={'xs'} fw={600} checked={false}>
@@ -73,20 +68,9 @@ function AccountCard({
             </Chip>
           )}
         </Group>
-        <Text fz="sm" mt="xs">
+        {/* <Text fz="sm" mt="xs">
           {bankName}
-        </Text>
-        <Text fz="sm" mt="xs">
-          A/c No.: {accountNumber}
-        </Text>
-        <Text fz="sm" mt="xs">
-          IFSC No.: {ifscCode}
-        </Text>
-        {branchAddress && (
-          <Text fz="sm" mt="xs">
-            Address: {branchAddress}
-          </Text>
-        )}
+        </Text> */}
       </Card.Section>
 
       <Card.Section className={classes.section}>
@@ -95,13 +79,13 @@ function AccountCard({
             Balance
           </Text>
           <Text weight={500} size="md">
-            {numberToCurrency(-2012310)}
+            {numberToCurrency(balance)}
           </Text>
         </Group>
       </Card.Section>
 
       <Group mt="xs">
-        <Link href={`/account/edit/${id}`}>
+        {/* <Link href={`/ledger/edit/${id}`}>
           <Button size="xs">Edit</Button>
         </Link>
         <CopyButton
@@ -119,8 +103,8 @@ function AccountCard({
               </ActionIcon>
             </Tooltip>
           )}
-        </CopyButton>
-        <Tooltip label="Delete Account">
+        </CopyButton> */}
+        <Tooltip label="Delete Ledger">
           <ActionIcon
             color="red"
             variant="filled"
@@ -130,7 +114,7 @@ function AccountCard({
                 notifications.show({
                   color: 'teal',
                   title: 'Success',
-                  message: `Deleted Account: ${nickName}`,
+                  message: `Deleted Ledger: ${name}`,
                 });
               });
             }}

@@ -5,7 +5,6 @@ import AdminDrawer from './helpers/admin-drawer';
 import AdminHeader from './helpers/admin-header';
 import AdminNavbar from './helpers/admin-nav';
 import { AdminLayoutContext } from './helpers/context';
-import { RouterTransition } from './helpers/router-transitions';
 import { AdminLayoutProps } from './helpers/types';
 
 export const AdminLayout: React.FC<
@@ -31,7 +30,7 @@ export const AdminLayout: React.FC<
         withNormalizeCSS
         theme={{
           globalStyles: (theme) => ({
-            '#__next': {
+            body: {
               width: '100vw',
               height: '100vh',
               maxWidth: '100vw',
@@ -44,17 +43,29 @@ export const AdminLayout: React.FC<
         }}
       >
         <Notifications />
-        <RouterTransition />
+        {/* <RouterTransition /> */}
         <AdminHeader />
         <Box
           sx={{
             display: 'flex',
+            maxWidth: '100vw',
             flexGrow: 1,
             height: 'calc(100% - 72px)',
           }}
         >
           <AdminNavbar />
-          <Box>{children}</Box>
+          <Box
+            sx={(t) => ({
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexGrow: 1,
+              background: t.colors.gray[4],
+              padding: t.spacing.md,
+              gap: t.spacing.md,
+            })}
+          >
+            {children}
+          </Box>
         </Box>
         {isMobile && <AdminDrawer />}
       </MantineProvider>

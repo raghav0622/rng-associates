@@ -1,8 +1,6 @@
 import { Stack } from '@mantine/core';
-import { lazy } from 'react';
 import { useEntityData } from '../../resources';
-
-const EntityDisplay = lazy(() => import('./EntityDisplay'));
+import EntityDisplay from './EntityDisplay';
 
 function ViewEntity() {
   const data = useEntityData();

@@ -13,14 +13,33 @@ import { IconTrash } from '@tabler/icons';
 import {
   APIErrorNotification,
   Entity,
-  useAccountByOwnerID,
   useEntityAPI,
+  useLedgerDataByOwnerID,
 } from '../../resources';
-import AccountCard from '../Account/AccountCard';
+import LedgerCard from '../Ledger/LedgerCard';
+
+const LedgerDetails: React.FC<{ id: string }> = ({ id }) => {
+  const ledgers = useLedgerDataByOwnerID(id);
+
+  return (
+    <>
+      {ledgers !== undefined && ledgers.length > 0 ? (
+        <Grid gutter="md">
+          {ledgers.map((acc) => (
+            <Grid.Col xs={12} md={6} lg={4} xl={3} key={id + acc.id}>
+              <LedgerCard {...acc} />
+            </Grid.Col>
+          ))}
+        </Grid>
+      ) : (
+        <Notification title="No Ledgers to display" withCloseButton={false} />
+      )}
+    </>
+  );
+};
 
 const EntityDisplay: React.FC<Entity> = ({ id, name }) => {
   const { remove } = useEntityAPI();
-  const accounts = useAccountByOwnerID(id);
 
   return (
     <Card key={`entity-` + id}>
@@ -46,17 +65,7 @@ const EntityDisplay: React.FC<Entity> = ({ id, name }) => {
             </ActionIcon>
           </Tooltip>
         </Group>
-        {accounts.length > 0 ? (
-          <Grid gutter="md">
-            {accounts.map((acc) => (
-              <Grid.Col xs={12} md={4} key={id + acc.accountNumber}>
-                <AccountCard {...acc} />
-              </Grid.Col>
-            ))}
-          </Grid>
-        ) : (
-          <Notification title="No Accounts exist" withCloseButton={false} />
-        )}
+        {id && <LedgerDetails id={id} />}
       </Stack>
     </Card>
   );

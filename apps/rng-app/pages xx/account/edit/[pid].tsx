@@ -1,8 +1,10 @@
+import ContentWin from '../../../components/ContentWin';
+
 import { useRouter } from 'next/router';
 import { lazy } from 'react';
 
 const EditForm = lazy(
-  () => import('../../../components/Account/EditAccountForm')
+  () => import('../../../components/Ledger/EditAccountForm')
 );
 
 function CreateAccountPage() {
@@ -10,8 +12,12 @@ function CreateAccountPage() {
   const { pid } = router.query;
 
   if (pid !== undefined && typeof pid === 'string') {
-    return <EditForm id={pid} />;
+    return (
+      <ContentWin>
+        <EditForm id={pid} />
+      </ContentWin>
+    );
   }
-  return <>Error 404</>;
+  return <ContentWin>Error 404</ContentWin>;
 }
 export default CreateAccountPage;

@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestoreCollectionData } from 'reactfire';
 import { z } from 'zod';
+import { useLedgerAPI } from '../Ledger';
 import { useEntity } from './schema';
 
 export const useEntityAPI = () => {
@@ -25,7 +26,8 @@ export const useEntityAPI = () => {
     firestoreCollectionName,
   } = useEntity();
   const data = useEntityData();
-
+  const { create: createLedger, removeByOwnerID: removeLedgerByOwnerID } =
+    useLedgerAPI();
   const api = {
     async create(
       { name }: Omit<z.infer<typeof schema>, 'id'>,
@@ -51,9 +53,46 @@ export const useEntityAPI = () => {
           'id'
         >);
 
-        await updateDoc(getRefByID(uid), {
-          id: uid,
-        });
+        await Promise.all([
+          updateDoc(getRefByID(uid), {
+            id: uid,
+          }),
+          createLedger({
+            balance: 0,
+            category: 'Cash',
+            type: 'Cash',
+            name: 'Cash',
+            owner: uid,
+          }),
+          createLedger({
+            balance: 0,
+            category: 'Interest (+)',
+            type: 'General',
+            name: 'Bank Interest (Savings)',
+            owner: uid,
+          }),
+          createLedger({
+            balance: 0,
+            category: 'Interest (-)',
+            type: 'General',
+            name: 'Bank Interest (OD)',
+            owner: uid,
+          }),
+          createLedger({
+            balance: 0,
+            category: 'Expenses (Indirect)',
+            type: 'General',
+            name: 'Bank Charges',
+            owner: uid,
+          }),
+          createLedger({
+            balance: 0,
+            category: 'Interest (+)',
+            type: 'General',
+            name: 'FDR Interest',
+            owner: uid,
+          }),
+        ]);
 
         return { id: uid, name } as z.infer<typeof schema>;
       }
@@ -65,8 +104,8 @@ export const useEntityAPI = () => {
       }
 
       const doc = getRefByID(id);
-
-      deleteDoc(doc);
+      await removeLedgerByOwnerID(id);
+      await deleteDoc(doc);
     },
   };
 
@@ -84,7 +123,7 @@ export const useEntityData = () => {
 export const useEntityDataById = (id: string) => {
   const { ref, refWithConverter, schema } = useEntity();
 
-  const q = query(ref, where('id', '==', id));
+  const q = query(ref, where('id', '==', id || ''));
   const { status, data } = useFirestoreCollectionData(q, { suspense: true });
 
   return data[0] as z.infer<typeof schema>;

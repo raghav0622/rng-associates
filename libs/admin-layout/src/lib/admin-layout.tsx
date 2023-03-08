@@ -1,9 +1,11 @@
 import { AppShell, MantineProvider } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { Notifications } from '@mantine/notifications';
 import AdminDrawer from './helpers/admin-drawer';
 import AdminHeader from './helpers/admin-header';
 import AdminNavbar from './helpers/admin-nav';
 import { AdminLayoutContext } from './helpers/context';
+import { RouterTransition } from './helpers/router-transitions';
 import { AdminLayoutProps } from './helpers/types';
 
 export const AdminLayout: React.FC<
@@ -26,6 +28,8 @@ export const AdminLayout: React.FC<
       }}
     >
       <MantineProvider withNormalizeCSS>
+        <Notifications />
+        <RouterTransition />
         <AppShell
           padding="md"
           navbarOffsetBreakpoint="sm"
@@ -34,9 +38,11 @@ export const AdminLayout: React.FC<
           styles={(theme) => ({
             main: {
               backgroundColor: theme.colors.gray[2],
+              position: 'relative',
             },
           })}
         >
+          {/* <Suspense fallback={<LoadingOverlay visible />}>{children}</Suspense> */}
           {children}
         </AppShell>
         {isMobile && <AdminDrawer />}

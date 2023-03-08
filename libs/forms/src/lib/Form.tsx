@@ -17,15 +17,18 @@ import { IconAlertCircle } from '@tabler/icons';
 import { memo, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { renderFormItem } from './helpers/renderFormSchema';
+import { renderFormItem } from './helpers';
 import { OnSubmitResult, RNGFormProps } from './types';
 
 export function RNGForm<Schema extends z.ZodType<any, any>>({
   schema,
   initialValues,
+  name,
   meta,
   ui,
-  functions,
+  uiSchema,
+  onChange,
+  onSubmit,
   sx,
   resetOnSuccess = true,
 }: RNGFormProps<Schema>) {
@@ -47,11 +50,11 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
 
   useEffect(() => {
     (async function () {
-      if (functions?.onChange && formValues) {
-        await functions.onChange(formValues);
+      if (onChange && formValues) {
+        await onChange(formValues);
       }
     })();
-  }, [formValues, functions?.onChange]);
+  }, [formValues, onChange]);
 
   useEffect(() => {
     if (ctx.formState.isSubmitSuccessful && resetOnSuccess) {
@@ -72,10 +75,8 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
         onSubmit={ctx.handleSubmit(async (values) => {
           clearErrors();
 
-          if (functions?.onSubmit) {
-            const result: OnSubmitResult<Schema> = await functions.onSubmit(
-              values
-            );
+          if (onSubmit) {
+            const result: OnSubmitResult = await onSubmit(values);
 
             if (result.errors !== false) {
               result.errors.map((item, index) => {
@@ -91,7 +92,7 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
       >
         <Stack spacing={0}>
           <Title order={3}>{meta.formTitle}</Title>
-          <Text fz="md">{meta.formDescription}</Text>
+          {meta?.formDescription && <Text fz="md">{meta.formDescription}</Text>}
         </Stack>
         <Stack spacing="md" sx={{ position: 'relative' }}>
           <LoadingOverlay visible={ctx.formState.isSubmitting} />
@@ -108,7 +109,7 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
                 {Object.keys(errors)
                   .filter((item) => item.startsWith('custom'))
                   .map((item, i) => (
-                    <Text fz="md" key={meta.name + 'error' + item}>
+                    <Text fz="md" key={name + 'error' + item}>
                       {/**
                       @ts-expect-error asfdsafsa*/}
                       {errors[item].message}
@@ -120,7 +121,7 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
 
           {/* render actual form */}
           <Grid gutter="lg" m={0}>
-            {ui.schema.map((formItem, index) => {
+            {uiSchema.map((formItem, index) => {
               return renderFormItem<Schema>(
                 formItem,
                 `${meta.formTitle}.${formItem.name}`
@@ -129,9 +130,9 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
             <Grid.Col span={12}>
               <Flex justify={'flex-end'} gap="sm">
                 <Button type="reset" onClick={() => reset(initialValues)}>
-                  {ui.resetText || 'Reset'}
+                  {ui?.resetText || 'Reset'}
                 </Button>
-                <Button type="submit">{ui.submitText || 'Submit'}</Button>
+                <Button type="submit">{ui?.submitText || 'Submit'}</Button>
               </Flex>
             </Grid.Col>
           </Grid>

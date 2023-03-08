@@ -1,15 +1,24 @@
-import { collection, doc, QueryDocumentSnapshot } from 'firebase/firestore';
-import { useFirestore } from 'reactfire';
+import {
+  collection,
+  doc,
+  Firestore,
+  QueryDocumentSnapshot,
+} from 'firebase/firestore';
 import { z } from 'zod';
 import { Resource } from './types';
 
+export type createResourceProp<Schema extends z.ZodType<any, any>> = Omit<
+  Resource<Schema>,
+  'fn'
+> & {
+  firestore: Firestore;
+};
 export function useCreateResource<Schema extends z.ZodType<any, any>>({
   name,
   schema,
   firestoreCollectionName,
-}: Omit<Resource<Schema>, 'fn'>) {
-  const firestore = useFirestore();
-
+  firestore,
+}: createResourceProp<Schema>) {
   if (!firestore) {
     throw new Error('Initialize firestore properly.');
   }
@@ -28,12 +37,6 @@ export function useCreateResource<Schema extends z.ZodType<any, any>>({
 
   const getRefByID = (id: string) => doc(refWithConverter, id);
 
-  function createFunctions(
-    args: Record<string, (args: z.infer<Schema>) => Promise<unknown>>
-  ) {
-    return args;
-  }
-
   return {
     name,
     schema,
@@ -43,6 +46,5 @@ export function useCreateResource<Schema extends z.ZodType<any, any>>({
     refWithConverter,
     getRefByID,
     firestore,
-    createFunctions,
   };
 }

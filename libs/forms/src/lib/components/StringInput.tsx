@@ -21,12 +21,13 @@ export function StringInput<Schema extends z.ZodType<any, any>>({
   colProps = {
     span: 12,
   },
+  required,
   ...rest
 }: StringInputProps<Schema>) {
   const {
     field: { value, name: givenName, onChange },
     fieldState: { error },
-    formState: { isSubmitting },
+    formState: { isSubmitting, isSubmitSuccessful },
   } = useController({
     name,
   });
@@ -41,7 +42,7 @@ export function StringInput<Schema extends z.ZodType<any, any>>({
 
   useEffect(() => {
     if (value === '' || value === null || value === undefined) {
-      onChange(undefined);
+      onChange('');
     }
   }, [value, onChange]);
 
@@ -53,7 +54,7 @@ export function StringInput<Schema extends z.ZodType<any, any>>({
           name={givenName}
           onChange={onChange}
           disabled={isSubmitting || rest.disabled}
-          value={value || ''}
+          value={value}
           size="sm"
           error={error?.message}
           label={label}

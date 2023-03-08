@@ -1,10 +1,10 @@
 import { AdminLayout } from '@rng-associates/admin-layout';
+import { FireInit } from '@rng-associates/firesource';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import NavLinks from '../components/NavLinks';
 import NoSSR from '../components/NoSSR';
-const FireInit = lazy(() => import('@rng-associates/firesource'));
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (

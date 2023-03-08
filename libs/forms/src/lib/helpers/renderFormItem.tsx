@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { StringInput } from '../Components';
+import { Select, StringInput } from '../Components';
 import { RNGFormItem } from '../types';
 
 export function renderFormItem<Schema extends z.ZodType<any, any>>(
@@ -8,6 +8,9 @@ export function renderFormItem<Schema extends z.ZodType<any, any>>(
 ) {
   if (item.type === 'text') {
     return <StringInput key={key} {...item} />;
+  }
+  if (item.type === 'select') {
+    return <Select key={key} {...item} />;
   }
 
   return null;

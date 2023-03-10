@@ -1,18 +1,9 @@
 'use client';
 
-import { lazy } from 'react';
-import ContentWin from '../../../components/ContentWin';
-
-const CreateForm = lazy(
-  () => import('../../../components/Entity/CreateEntityForm')
-);
+import { CreateEntityForm } from '@rng-associates/accounts';
 
 export function EntityPage() {
-  return (
-    <ContentWin mx="auto">
-      <CreateForm />
-    </ContentWin>
-  );
+  return <CreateEntityForm />;
 }
 
 export default EntityPage;

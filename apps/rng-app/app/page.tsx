@@ -1,8 +1,8 @@
 'use client';
-import ContentWin from '../components/ContentWin';
+import { Title } from '@mantine/core';
 
 export function AppIndexPage() {
-  return <ContentWin>Dashboar stuff </ContentWin>;
+  return <Title>Accounting App</Title>;
 }
 
 export default AppIndexPage;

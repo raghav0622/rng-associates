@@ -2,15 +2,7 @@
 import { BoxProps, ColProps } from '@mantine/core';
 import type { Path, UseFormProps as RHUseFormProps } from 'react-hook-form';
 import { z } from 'zod';
-import { SelectProps, StringInputProps } from './Components';
-
-export type RNGFormItem<Schema extends z.ZodType<any, any>> =
-  | SelectProps<Schema>
-  | StringInputProps<Schema>;
-
-export type RNGFormUISchema<Schema extends z.ZodType<any, any>> = Array<
-  RNGFormItem<Schema>
->;
+import { RNGFormUISchema } from './Components';
 
 export type BaseItem<Schema extends z.ZodType<any, any>> = {
   name: Path<z.infer<Schema>>;
@@ -36,7 +28,9 @@ export interface RNGFormProps<Schema extends z.ZodType<any, any>>
   uiSchema: RNGFormUISchema<Schema>;
   meta: {
     formTitle: string;
+    titleOrder?: 1 | 2 | 3 | 4 | 5 | 6;
     formDescription?: string;
+    buttonSize?: 'sm' | 'md' | 'lg';
   };
   onSubmit?: (values: z.infer<Schema>) => Promise<OnSubmitResult>;
   onChange?: (values: z.infer<Schema>) => Promise<unknown | void>;

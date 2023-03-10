@@ -1,9 +1,13 @@
+import { DatesProvider } from '@mantine/dates';
+import 'dayjs/locale/en-in';
+
 import { Box, MantineProvider } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import AdminDrawer from './helpers/admin-drawer';
 import AdminHeader from './helpers/admin-header';
 import AdminNavbar from './helpers/admin-nav';
+import Content from './helpers/content';
 import { AdminLayoutContext } from './helpers/context';
 import { AdminLayoutProps } from './helpers/types';
 
@@ -42,32 +46,24 @@ export const AdminLayout: React.FC<
           }),
         }}
       >
-        <Notifications />
-        {/* <RouterTransition /> */}
-        <AdminHeader />
-        <Box
-          sx={{
-            display: 'flex',
-            maxWidth: '100vw',
-            flexGrow: 1,
-            height: 'calc(100% - 72px)',
-          }}
-        >
-          <AdminNavbar />
+        <DatesProvider settings={{ locale: 'en-in' }}>
+          <Notifications />
+          {/* <RouterTransition /> */}
+          <AdminHeader />
           <Box
-            sx={(t) => ({
-              boxSizing: 'border-box',
+            sx={{
               display: 'flex',
+              width: '100vw',
+              maxWidth: '100vw',
               flexGrow: 1,
-              background: t.colors.gray[4],
-              padding: t.spacing.md,
-              gap: t.spacing.md,
-            })}
+              height: 'calc(100% - 72px)',
+            }}
           >
-            {children}
+            <AdminNavbar />
+            <Content>{children}</Content>
           </Box>
-        </Box>
-        {isMobile && <AdminDrawer />}
+          {isMobile && <AdminDrawer />}
+        </DatesProvider>
       </MantineProvider>
     </AdminLayoutContext.Provider>
   );

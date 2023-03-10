@@ -1,18 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Grid, TextInput, TextInputProps } from '@mantine/core';
+import {
+  Grid,
+  NumberInput as MNumberInput,
+  NumberInputProps as MNumberInputProps,
+} from '@mantine/core';
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { z } from 'zod';
 import { BaseItem } from '../types';
 import { useRenderItemLogic } from './_useRenderItemLogic';
 
-export type StringInputProps<Schema extends z.ZodType<any, any>> =
+export type NumberInputProps<Schema extends z.ZodType<any, any>> =
   BaseItem<Schema> &
-    Omit<TextInputProps, 'name' | 'label' | 'description' | 'type'> & {
-      type: 'text';
+    Omit<MNumberInputProps, 'name' | 'label' | 'description' | 'type'> & {
+      type: 'number';
     };
 
-export function StringInput<Schema extends z.ZodType<any, any>>({
+export function NumberInput<Schema extends z.ZodType<any, any>>({
   name,
   label,
   description,
@@ -22,12 +26,13 @@ export function StringInput<Schema extends z.ZodType<any, any>>({
     span: 12,
   },
   required,
+  hideControls = true,
   ...rest
-}: StringInputProps<Schema>) {
+}: NumberInputProps<Schema>) {
   const {
     field: { value, name: givenName, onChange },
     fieldState: { error },
-    formState: { isSubmitting },
+    formState: { isSubmitting, isSubmitSuccessful },
   } = useController({
     name,
   });
@@ -49,7 +54,7 @@ export function StringInput<Schema extends z.ZodType<any, any>>({
   if (render) {
     return (
       <Grid.Col {...colProps}>
-        <TextInput
+        <MNumberInput
           id={givenName}
           name={givenName}
           onChange={onChange}
@@ -59,6 +64,7 @@ export function StringInput<Schema extends z.ZodType<any, any>>({
           error={error?.message}
           label={label}
           description={description}
+          hideControls={hideControls}
           {...rest}
         />
       </Grid.Col>

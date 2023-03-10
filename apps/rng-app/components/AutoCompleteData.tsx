@@ -9,10 +9,13 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
+import {
+  APIErrorNotification,
+  useAutoKeyAPI,
+  useAutoKeyDataGrouped,
+} from '@rng-associates/accounts';
 import { IconTrash } from '@tabler/icons';
 import { sortBy } from 'lodash';
-import { APIErrorNotification } from '../resources';
-import { useAutoKeyAPI, useAutoKeyDataGrouped } from '../resources/AutoKey';
 
 function AutoCompleteData() {
   const data = useAutoKeyDataGrouped();
@@ -77,5 +80,3 @@ function AutoCompleteData() {
     </Grid>
   );
 }
-
-export default AutoCompleteData;

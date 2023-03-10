@@ -17,7 +17,7 @@ import { IconAlertCircle } from '@tabler/icons';
 import { memo, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { renderFormItem } from './helpers';
+import { renderFormItem } from './components';
 import { OnSubmitResult, RNGFormProps } from './types';
 
 export function RNGForm<Schema extends z.ZodType<any, any>>({
@@ -70,8 +70,8 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
         component={'form'}
         noValidate
         autoComplete="off"
-        shadow="lg"
-        p="lg"
+        shadow="sm"
+        p="md"
         onSubmit={ctx.handleSubmit(async (values) => {
           clearErrors();
 
@@ -91,7 +91,7 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
         })}
       >
         <Stack spacing={0}>
-          <Title order={3}>{meta.formTitle}</Title>
+          <Title order={meta.titleOrder ?? 5}>{meta.formTitle}</Title>
           {meta?.formDescription && <Text fz="md">{meta.formDescription}</Text>}
         </Stack>
         <Stack spacing="md" sx={{ position: 'relative' }}>
@@ -129,10 +129,23 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
             })}
             <Grid.Col span={12}>
               <Flex justify={'flex-end'} gap="sm">
-                <Button type="reset" onClick={() => reset(initialValues)}>
+                <Button
+                  type="reset"
+                  onClick={() => reset(initialValues)}
+                  size={meta.buttonSize || 'sm'}
+                  color="red"
+                  variant="subtle"
+                >
                   {ui?.resetText || 'Reset'}
                 </Button>
-                <Button type="submit">{ui?.submitText || 'Submit'}</Button>
+                <Button
+                  type="submit"
+                  size={meta.buttonSize || 'sm'}
+                  color="blue"
+                  variant="outline"
+                >
+                  {ui?.submitText || 'Submit'}
+                </Button>
               </Flex>
             </Grid.Col>
           </Grid>

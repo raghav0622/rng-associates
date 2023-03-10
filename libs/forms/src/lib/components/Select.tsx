@@ -8,8 +8,8 @@ import {
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { z } from 'zod';
-import { useRenderItemLogic } from '../helpers';
 import { BaseItem } from '../types';
+import { useRenderItemLogic } from './_useRenderItemLogic';
 
 export type SelectProps<Schema extends z.ZodType<any, any>> = BaseItem<Schema> &
   Omit<MSelectProps, 'name' | 'label' | 'description' | 'type' | 'onCreate'> & {

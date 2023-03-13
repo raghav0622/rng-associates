@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { DateInput } from './DateInput';
+import { DependentField } from './DependentField';
 import { HiddenInput } from './Hidden';
 import { NumberInput } from './NumberInput';
 import { Select } from './Select';
@@ -24,6 +25,9 @@ export function renderFormItem<Schema extends z.ZodType<any, any>>(
   }
   if (item.type === 'hidden') {
     return <HiddenInput key={key} {...item} />;
+  }
+  if (item.type === 'dependent') {
+    return <DependentField key={key} {...item} />;
   }
 
   return null;

@@ -2,7 +2,7 @@ import { Divider, NavLink } from '@mantine/core';
 import { IconGauge } from '@tabler/icons';
 import Link from 'next/link';
 
-export default function NavLinks() {
+export function NavLinks() {
   return (
     <>
       <Link href="/" legacyBehavior>
@@ -19,10 +19,6 @@ export default function NavLinks() {
 
       <Link href="/account/create" legacyBehavior>
         <NavLink label="Create Account" icon={<IconGauge size={24} />} />
-      </Link>
-      <Divider my="sm" />
-      <Link href="/entity/create-entity" legacyBehavior>
-        <NavLink label="Create Entity" icon={<IconGauge size={24} />} />
       </Link>
       {/* <Link href="/autocomplete-data" legacyBehavior>
         <NavLink label="Autocomplete Data" icon={<IconGauge size={24} />} />

@@ -1,2 +1,3 @@
-export * from './forms';
-export * from './schema';
+export * from './_forms';
+export * from './_resource';
+export * from './_schema';

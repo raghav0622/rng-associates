@@ -1,7 +1,7 @@
 export * from './Account';
 export * from './AutoKey';
 export * from './Entity';
-export * from './Ledger';
+export * from './EntityCtx';
 export * from './Transaction';
 export * from './utils';
 

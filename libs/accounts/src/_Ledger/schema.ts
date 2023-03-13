@@ -1,7 +1,6 @@
 import { useCreateResource } from '@rng-associates/firesource';
 import { useFirestore } from 'reactfire';
 import { z } from 'zod';
-import { TransactionSchema } from '../Transaction';
 
 export const LedgerCategories = [
   'Fixed Deposit',
@@ -27,7 +26,6 @@ export const LedgerSchema = z
     category: z.enum(LedgerCategories),
     balance: z.number(),
     updatedAt: z.date(),
-    transactions: z.array(TransactionSchema),
   })
   .strict();
 
@@ -37,7 +35,6 @@ export const CreateLedgerSchema = LedgerSchema.omit({
   id: true,
   balance: true,
   updatedAt: true,
-  transactions: true,
 });
 
 export type CreateLedger = z.infer<typeof CreateLedgerSchema>;

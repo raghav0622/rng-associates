@@ -16,8 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@rng-associates/admin-layout": ["libs/admin-layout/src/index.ts"],
       "@rng-associates/accounts": ["libs/accounts/src/index.ts"],
+      "@rng-associates/admin-layout": ["libs/admin-layout/src/index.ts"],
       "@rng-associates/dashboard-layout": [
         "libs/dashboard-layout/src/index.tsx"
       ],

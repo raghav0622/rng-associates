@@ -24,7 +24,8 @@
     "**/*.js",
     "**/*.jsx",
     "next-env.d.ts",
-    "../../apps/rng-app/.next/types/**/*.ts"
+    "../../apps/rng-app/.next/types/**/*.ts",
+    "layout/NavLinks.tsx"
   ],
   "exclude": [
     "node_modules",

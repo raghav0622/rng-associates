@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestoreCollectionData } from 'reactfire';
 import { z } from 'zod';
-import { useLedgerAPI } from '../Ledger';
+import { useLedgerAPI } from '../_Ledger';
 import { useEntity } from './schema';
 
 export const useEntityAPI = () => {

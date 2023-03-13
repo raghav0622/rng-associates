@@ -17,7 +17,7 @@ import {
 import { IconTrash } from '@tabler/icons';
 import { sortBy } from 'lodash';
 
-function AutoCompleteData() {
+export function AutoCompleteData() {
   const data = useAutoKeyDataGrouped();
 
   const { remove } = useAutoKeyAPI();

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from 'zod';
 import { DateInputProps } from './DateInput';
+import { DependentFieldProps } from './DependentField';
 import { HiddenInputProps } from './Hidden';
 import { NumberInputProps } from './NumberInput';
 import { SelectProps } from './Select';
@@ -11,7 +12,8 @@ export type RNGFormItem<Schema extends z.ZodType<any, any>> =
   | StringInputProps<Schema>
   | NumberInputProps<Schema>
   | DateInputProps<Schema>
-  | HiddenInputProps<Schema>;
+  | HiddenInputProps<Schema>
+  | DependentFieldProps<Schema>;
 
 export type RNGFormUISchema<Schema extends z.ZodType<any, any>> = Array<
   RNGFormItem<Schema>

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { Account, useAccountDataByOwner } from '../Account';
 import { useEntityDataById } from '../Entity/api';
 import { Entity } from '../Entity/schema';
+import { Account, useAccountDataByOwner } from '../_Account';
 
 export const EntityContext = React.createContext<
   { entity: Entity; accounts: Account[] } | undefined

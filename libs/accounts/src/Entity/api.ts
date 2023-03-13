@@ -11,7 +11,6 @@ import {
 } from 'firebase/firestore';
 import { useFirestoreCollectionData } from 'reactfire';
 import { z } from 'zod';
-import { useLedgerAPI } from '../_Ledger';
 import { useEntity } from './schema';
 
 export const useEntityAPI = () => {
@@ -26,8 +25,6 @@ export const useEntityAPI = () => {
     firestoreCollectionName,
   } = useEntity();
   const data = useEntityData();
-  const { create: createLedger, removeByOwnerID: removeLedgerByOwnerID } =
-    useLedgerAPI();
   const api = {
     async create(
       { name }: Omit<z.infer<typeof schema>, 'id'>,
@@ -57,11 +54,6 @@ export const useEntityAPI = () => {
           updateDoc(getRefByID(uid), {
             id: uid,
           }),
-          createLedger({
-            category: 'Cash',
-            name: 'Cash in Hand',
-            owner: uid,
-          }),
         ]);
 
         return { id: uid, name } as z.infer<typeof schema>;
@@ -74,7 +66,6 @@ export const useEntityAPI = () => {
       }
 
       const doc = getRefByID(id);
-      await removeLedgerByOwnerID(id);
       await deleteDoc(doc);
     },
   };

@@ -1,6 +1,14 @@
 import { createContext, useContext } from 'react';
-import { LayoutContext } from './types';
 
+/* eslint-disable @typescript-eslint/no-empty-interface */
+export type LayoutContext = {
+  mobileNav: {
+    toggle: () => unknown | Promise<unknown>;
+    close: () => unknown | Promise<unknown>;
+    open: boolean;
+  };
+  isMobile: boolean;
+};
 export const AdminLayoutContext = createContext<LayoutContext | undefined>(
   undefined
 );

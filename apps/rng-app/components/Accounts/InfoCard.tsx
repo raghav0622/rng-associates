@@ -10,8 +10,12 @@ import {
   Title,
   UnstyledButton,
 } from '@mantine/core';
-import { Account, numberToCurrency } from '@rng-associates/accounts';
-import dayjs from 'dayjs';
+import {
+  Account,
+  firstoreTimestampToDateString,
+  numberToCurrency,
+  useCompanyCtx,
+} from '@rng-associates/accounts';
 import Link from 'next/link';
 
 const useStyles = createStyles((theme) => ({
@@ -40,11 +44,12 @@ const useStyles = createStyles((theme) => ({
 
 export function AccountInfoCard(acc: Account) {
   const { classes } = useStyles();
+  const { appPath } = useCompanyCtx();
   return (
     <Card withBorder radius="md" p="lg" className={classes.card}>
       <Stack spacing="md">
         <Group position="apart" align={'center'}>
-          <Link href={`/account/${acc.id}`} legacyBehavior>
+          <Link href={`${appPath}account/${acc.id}`} legacyBehavior>
             <UnstyledButton>
               <Title order={6}>{acc.nickName}</Title>
             </UnstyledButton>
@@ -56,10 +61,22 @@ export function AccountInfoCard(acc: Account) {
           <Stack spacing="none">
             <Text size="sm">Balance</Text>
             <Text size="xs" color="dimmed">
-              <>As on {dayjs(acc.updatedAt).format('DD-MM-YYYY (ddd)')}</>
+              <>
+                {acc.transactions[acc.transactions.length - 1] === undefined
+                  ? 'No Tranasction'
+                  : 'As on ' +
+                    firstoreTimestampToDateString(
+                      acc.transactions[acc.transactions.length - 1].date
+                    )}
+              </>
             </Text>
           </Stack>
-          <Title order={6}>{numberToCurrency(acc.balance, true)}</Title>
+          <Title order={6}>
+            {numberToCurrency(
+              acc.transactions[acc.transactions.length - 1]?.nextBalance || 0,
+              true
+            )}
+          </Title>
         </Group>
         <Divider />
         <Group>

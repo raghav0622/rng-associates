@@ -1,9 +1,6 @@
 'use client';
 
-import { EntityProvider } from '@rng-associates/accounts';
-import { AdminLayout } from '@rng-associates/admin-layout';
 import { FireInit } from '@rng-associates/firesource';
-import { NavLinks } from '../layout';
 
 export default function RootLayout({
   children,
@@ -26,11 +23,7 @@ export default function RootLayout({
           }}
           suspense={true}
         >
-          <EntityProvider id="B8OBTrHtBtNnnWeS3xiO">
-            <AdminLayout appName="Entity: Raghav Goyal" navlinks={<NavLinks />}>
-              {children}
-            </AdminLayout>
-          </EntityProvider>
+          {children}
         </FireInit>
       </body>
     </html>

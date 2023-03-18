@@ -12,7 +12,7 @@ import {
 import { groupBy, sortBy } from 'lodash';
 import { useFirestoreCollectionData } from 'reactfire';
 import { z } from 'zod';
-import { useAutoKey } from './schema';
+import { useAutoKey } from './_schema';
 
 export const useAutoKeyAPI = () => {
   const {

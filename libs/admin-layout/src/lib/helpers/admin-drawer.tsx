@@ -4,10 +4,8 @@ import { useLayoutContext } from './context';
 import { AdminNavbarProps } from './types';
 export const AdminDrawer: React.FC<AdminNavbarProps> = () => {
   const {
-    navlinks,
     isMobile,
     mobileNav: { open, close, toggle },
-    appName,
   } = useLayoutContext();
 
   return (

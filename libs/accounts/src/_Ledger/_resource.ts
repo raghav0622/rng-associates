@@ -1,14 +1,14 @@
 import { useCreateResource } from '@rng-associates/firesource';
 import { useFirestore } from 'reactfire';
-import { AccountTransactionSchema } from './_schema';
+import { LedgerSchema } from './_schema';
 
-export const useTransaction = () => {
+export const useLedger = () => {
   const firestore = useFirestore();
 
   return useCreateResource({
-    name: 'transaction',
-    firestoreCollectionName: 'transaction',
-    schema: AccountTransactionSchema,
+    name: 'ledger',
+    firestoreCollectionName: 'ledger',
+    schema: LedgerSchema,
     firestore: firestore,
   });
 };

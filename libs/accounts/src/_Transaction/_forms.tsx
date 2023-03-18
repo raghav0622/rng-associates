@@ -6,24 +6,25 @@ import {
 import { PathValue } from 'react-hook-form';
 import { APIFormErrorHandler } from '../utils';
 import { Account, useAccountOptions } from '../_Account';
-import {
-  CreateTransaction,
-  CreateTransactionSchema,
-  TransactionType,
-} from './_schema';
+import { useCompanyCtx } from '../_Context';
+import { useCreateTransactionAPI } from './_api';
+import { CreateTransactionLink, TransactionType } from './_schema';
 
 export const useCreateTransactionForm = (account: Account) => {
+  const { mutate } = useCreateTransactionAPI();
   const accOptions = useAccountOptions().filter((a) => a.value !== account.id);
+  const { fy } = useCompanyCtx();
   const createTransactionFormUISchema = useCreateUISchema(
-    CreateTransactionSchema,
+    CreateTransactionLink,
     [
       { type: 'hidden', name: 'ref' },
-      { type: 'hidden', name: 'refOrder' },
-      { type: 'hidden', name: 'refPreviousBalance' },
       {
         type: 'date',
         name: 'date',
         label: 'Date',
+        clearable: true,
+        minDate: fy.start,
+        maxDate: fy.end,
         colProps: { lg: 2 },
       },
       {
@@ -41,7 +42,7 @@ export const useCreateTransactionForm = (account: Account) => {
         type: 'dependent',
         label: 'Link Type',
         dependentFields: ['link'],
-        getVal: (value): PathValue<CreateTransaction, 'linkType'> => {
+        getVal: (value): PathValue<CreateTransactionLink, 'linkType'> => {
           const link = value('link');
           const isAccount =
             accOptions.filter(
@@ -52,7 +53,7 @@ export const useCreateTransactionForm = (account: Account) => {
           if (isAccount) {
             return 'account';
           }
-          return 'ledger';
+          return 'none';
         },
       },
       {
@@ -85,7 +86,7 @@ export const useCreateTransactionForm = (account: Account) => {
     ]
   );
 
-  const createAccountForm = useCreateRNGForm(CreateTransactionSchema, {
+  const createForm = useCreateRNGForm(CreateTransactionLink, {
     name: 'create-Transaction-form',
     meta: {
       formTitle: `Create New Transaction`,
@@ -94,8 +95,6 @@ export const useCreateTransactionForm = (account: Account) => {
     initialValues: {
       date: new Date(),
       ref: account.id,
-      refOrder: account.transactions.length + 1,
-      refPreviousBalance: account.balance,
       amount: 0,
       link: undefined,
       linkType: undefined,
@@ -105,10 +104,11 @@ export const useCreateTransactionForm = (account: Account) => {
     },
 
     uiSchema: createTransactionFormUISchema.form,
-    onSubmit: async (values) => {
-      const data = await APIFormErrorHandler(async () => {
-        console.log(values);
 
+    onSubmit: async (values) => {
+      console.log(values);
+      const data = await APIFormErrorHandler(async () => {
+        await mutate(values);
         // successNotification(`Account Created: ${result.nickName}`);
 
         return {
@@ -120,7 +120,7 @@ export const useCreateTransactionForm = (account: Account) => {
     },
   });
 
-  return createAccountForm;
+  return { createForm };
 };
 
 type CreateTransactionFormProps = {
@@ -130,6 +130,6 @@ type CreateTransactionFormProps = {
 export const CreateTransactionForm: React.FC<CreateTransactionFormProps> = ({
   account,
 }) => {
-  const props = useCreateTransactionForm(account);
-  return <RNGForm {...props} />;
+  const { createForm } = useCreateTransactionForm(account);
+  return <RNGForm {...createForm} />;
 };

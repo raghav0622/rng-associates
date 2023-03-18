@@ -1,9 +1,6 @@
-import { Box, Container, Title } from '@mantine/core';
-import { useLayoutContext } from './context';
-import { AdminHeaderProps } from './types';
+import { Box, Container } from '@mantine/core';
 
-const AdminHeader: React.FC<AdminHeaderProps> = () => {
-  const { appName } = useLayoutContext();
+const AdminHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <Box
       sx={(t) => ({
@@ -24,7 +21,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = () => {
           height: '100%',
         }}
       >
-        <Title order={3}>{appName}</Title>
+        {children}
       </Container>
     </Box>
   );

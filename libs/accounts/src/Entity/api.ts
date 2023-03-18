@@ -3,7 +3,7 @@ import { SelectItem } from '@mantine/core';
 import { APIError } from '@rng-associates/firesource';
 import {
   addDoc,
-  deleteDoc,
+  arrayUnion,
   orderBy,
   query,
   updateDoc,
@@ -11,83 +11,89 @@ import {
 } from 'firebase/firestore';
 import { useFirestoreCollectionData } from 'reactfire';
 import { z } from 'zod';
-import { useEntity } from './schema';
+import { firstoreTimestampToDate } from '..';
+import { useCompanyCtx } from '../_Context';
+import { Entity, FinancialYear, useEntity } from './schema';
 
-export const useEntityAPI = () => {
-  const {
-    name,
-    ref,
-    refWithConverter,
-    converter,
-    getRefByID,
-    schema,
-    firestore,
-    firestoreCollectionName,
-  } = useEntity();
+export const useCreateEntityAPI = () => {
+  const { ref, getRefByID, schema } = useEntity();
+
   const data = useEntityData();
-  const api = {
-    async create(
-      { name }: Omit<z.infer<typeof schema>, 'id'>,
-      validateOnly?: boolean
-    ) {
-      if (name === undefined || name === 'undefined' || name.length === 0) {
-        throw new APIError('Please provide valid name for entity!', 'name');
+
+  const mutate = async ({ name }: { name: string }) => {
+    if (name === 'undefined') {
+      throw new APIError('Please provide valid name for Company!', 'name');
+    }
+
+    if (data.length > 0) {
+      const isDuplicateName =
+        data.filter((existing) => existing.name === name).length > 0;
+
+      if (isDuplicateName) {
+        throw new APIError('Please provide unique name for Company!', 'name');
       }
+    }
 
-      if (data.length > 0) {
-        const isDuplicateName =
-          data.filter((existing) => existing.name === name).length > 0;
+    const { id: uid } = await addDoc(ref, {
+      name,
+      fy: [],
+    } as Omit<z.infer<typeof schema>, 'id'>);
 
-        if (isDuplicateName) {
-          throw new APIError('Please provide unique name for entity!', 'name');
-        }
-      }
+    await updateDoc(getRefByID(uid), {
+      id: uid,
+    });
 
-      /**Actual Creation of document */
-      if (validateOnly === undefined || !validateOnly) {
-        const { id: uid } = await addDoc(ref, { name } as Omit<
-          z.infer<typeof schema>,
-          'id'
-        >);
-
-        await Promise.all([
-          updateDoc(getRefByID(uid), {
-            id: uid,
-          }),
-        ]);
-
-        return { id: uid, name } as z.infer<typeof schema>;
-      }
-    },
-
-    async remove(id: string) {
-      if (id === undefined) {
-        throw new APIError('Please provide valid ID for entity!', 'id');
-      }
-
-      const doc = getRefByID(id);
-      await deleteDoc(doc);
-    },
+    return { id: uid, name, fy: [] } as Entity;
   };
 
-  return api;
+  return { mutate };
 };
+
+export const useCreateFYinEntityAPI = () => {
+  const {
+    company: { id },
+  } = useCompanyCtx();
+  const { getRefByID: getCompanyRef } = useEntity();
+  const mutate = async (payload: FinancialYear) => {
+    await updateDoc(getCompanyRef(id), {
+      fy: arrayUnion(payload),
+    });
+  };
+
+  return { mutate };
+};
+
 export const useEntityData = () => {
-  const { ref, refWithConverter, schema } = useEntity();
+  const { ref } = useEntity();
 
   const q = query(ref, orderBy('name', 'asc'));
-  const { status, data } = useFirestoreCollectionData(q, { suspense: true });
+  const { data } = useFirestoreCollectionData(q, { suspense: true });
 
-  return data as z.infer<typeof schema>[];
+  if (data.length === 0) {
+    return [] as Entity[];
+  }
+
+  return data as Entity[];
 };
 
 export const useEntityDataById = (id: string) => {
-  const { ref, refWithConverter, schema } = useEntity();
+  const { ref } = useEntity();
 
-  const q = query(ref, where('id', '==', id || ''));
+  const q = query(ref, where('id', '==', id));
   const { status, data } = useFirestoreCollectionData(q, { suspense: true });
 
-  return data[0] as z.infer<typeof schema>;
+  if (data.length === 0) {
+    return undefined;
+  }
+
+  const result = data[0] as Entity;
+  const newFy = result.fy.map((fy) => ({
+    ...fy,
+    start: firstoreTimestampToDate(fy.start),
+    end: firstoreTimestampToDate(fy.end),
+  }));
+
+  return { ...result, fy: newFy } as Entity;
 };
 
 export const useEntitySelectOptions = () => {

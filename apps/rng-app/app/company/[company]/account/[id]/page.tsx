@@ -1,11 +1,8 @@
 'use client';
 
 import { Badge, Card, Group, Stack, Title } from '@mantine/core';
-import {
-  CreateTransactionForm,
-  numberToCurrency,
-  useEntityCtx,
-} from '@rng-associates/accounts';
+import { CreateTransactionForm, useCompanyCtx } from '@rng-associates/accounts';
+import { TransactionTable } from '../../../../../components';
 
 type AccountPageProps = {
   params: {
@@ -14,7 +11,7 @@ type AccountPageProps = {
 };
 
 export default function AccountPage({ params: { id } }: AccountPageProps) {
-  const { accounts } = useEntityCtx();
+  const { accounts } = useCompanyCtx();
   const account = accounts.find((e) => e.id === id);
 
   if (account === undefined) {
@@ -31,13 +28,14 @@ export default function AccountPage({ params: { id } }: AccountPageProps) {
               <Badge size="lg" variant="filled" color="blue">
                 A/c Type: {account.type}
               </Badge>
-              <Badge size="lg" variant="filled" color="red">
-                Balance: {numberToCurrency(account.balance, true)}
-              </Badge>
             </Group>
           </Stack>
         </Card>
         <CreateTransactionForm account={account} />
+        <TransactionTable
+          viewer={account.id}
+          transactions={account.transactions}
+        />
       </Stack>
     </>
   );

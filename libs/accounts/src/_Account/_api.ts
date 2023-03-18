@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { SelectItem } from '@mantine/core';
-import { addDoc, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import {
+  addDoc,
+  arrayUnion,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { useFirestoreCollectionData } from 'reactfire';
-import { useEntityCtx } from '../EntityCtx';
+import { useCompanyCtx } from '../_Context';
+import { AccountTransaction } from '../_Transaction';
 import { useAccount } from './_resource';
 import { Account, CreateAccount } from './_schema';
 
 export const useCreateAccountAPI = () => {
-  const {
-    name,
-    ref,
-    refWithConverter,
-    converter,
-    getRefByID,
-    schema,
-    firestore,
-    firestoreCollectionName,
-  } = useAccount();
+  const { refWithConverter, getRefByID } = useAccount();
 
   const mutate = async (payload: CreateAccount) => {
     const { nickName, owner, type } = payload;
@@ -31,9 +30,7 @@ export const useCreateAccountAPI = () => {
 
     const { id: uid } = await addDoc(refWithConverter, {
       ...payload,
-      balance: 0,
       transactions: [],
-      updatedAt: new Date(),
       id: '',
     });
 
@@ -47,30 +44,51 @@ export const useCreateAccountAPI = () => {
 };
 
 export const useAccountDataByOwner = (owner: string) => {
-  const { ref, refWithConverter, schema } = useAccount();
+  const { ref } = useAccount();
 
   const q = query(ref, where('owner', '==', owner), orderBy('nickName', 'asc'));
-  const { status, data } = useFirestoreCollectionData(q, { suspense: true });
+  const { data } = useFirestoreCollectionData(q, { suspense: true });
+
   if (data.length === 0) {
     return [] as Account[];
   }
 
-  return data.map((acc) => {
-    return { ...acc, updatedAt: acc.updatedAt.toDate() };
-  }) as Account[];
+  const accs = (data as Account[]).map((acc) => {
+    return {
+      ...acc,
+    };
+  });
+
+  return accs;
 };
 
-export const useAccountDataByID = (id: string) => {
-  const { ref, refWithConverter, schema } = useAccount();
+export const useAccountDataByID = () => {
+  const { accounts } = useCompanyCtx();
+  const getData = (id: string) => {
+    const accDetails = accounts.find((e) => e.id === id);
+    if (accDetails === undefined) {
+      throw new Error('bai bai');
+    }
+    return accDetails;
+  };
 
-  const q = query(ref, where('id', '==', id));
-  const { status, data } = useFirestoreCollectionData(q, { suspense: true });
+  return { getData };
+};
 
-  return data[0] as Account;
+export const useAddTransactionInAccountAPI = () => {
+  const { getRefByID } = useAccount();
+
+  const mutate = async (ref: string, transaction: AccountTransaction) => {
+    await updateDoc(getRefByID(ref), {
+      transactions: arrayUnion(transaction),
+    });
+  };
+
+  return { mutate };
 };
 
 export const useAccountOptions = () => {
-  const { accounts } = useEntityCtx();
+  const { accounts } = useCompanyCtx();
 
   const options = accounts.map((acc) => {
     return {
@@ -81,4 +99,46 @@ export const useAccountOptions = () => {
   });
 
   return options;
+};
+
+export const useTransactionParse = () => {
+  const { getData } = useAccountDataByID();
+  const { accounts } = useCompanyCtx();
+  const isCashAccount = (id: string) =>
+    accounts.find((a) => a.type === 'Cash' && a.id === id);
+
+  const parseDefaultNarration = (viewer: string, trans: AccountTransaction) => {
+    if (trans.link && trans.linkType === 'account' && viewer === trans.ref) {
+      const linkAcName = getData(trans.link).nickName;
+
+      if (isCashAccount(trans.ref)) {
+        return trans.type === 'CR'
+          ? `Cash Withdrawl from ${linkAcName}`
+          : `Cash Deposit to ${linkAcName}`;
+      }
+      if (isCashAccount(trans.link)) {
+        return trans.type === 'CR'
+          ? `Cash Deposit (${linkAcName})`
+          : `Cash Withdrawl (${linkAcName})`;
+      }
+
+      return trans.type === 'CR'
+        ? `Transfer from ${linkAcName}`
+        : `Transfer to ${linkAcName}`;
+    }
+
+    return '';
+  };
+
+  // const parseTransactionType = (viewer: string, trans: AccountTransaction) => {
+  //   if (trans.linkType === 'account') {
+  //     if (viewer === trans.ref) {
+  //       return trans.type;
+  //     } else if (viewer === trans.link) {
+  //       return trans.type === 'CR' ? `DR` : `CR`;
+  //     }
+  //   }
+  // };
+
+  return { parseDefaultNarration };
 };

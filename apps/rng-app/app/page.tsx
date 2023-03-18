@@ -1,31 +1,15 @@
 'use client';
 
-import { Grid, Stack, Title } from '@mantine/core';
-import { useEntityCtx } from '@rng-associates/accounts';
-import { AccountInfoCard } from '../components/Accounts';
+import { Stack, Title } from '@mantine/core';
+import Link from 'next/link';
 
-export default function AccountsList() {
-  const {
-    entity: { id },
-    accounts: data,
-  } = useEntityCtx();
-
-  if (data.length === 0) {
-    return <>No Accounts To Show. Create One?</>;
-  }
-
+export default function CompanyDashboard() {
   return (
     <Stack>
       <Title order={6} ml="sm">
-        Accounts
+        Wlecome to RNG Accounting
       </Title>
-      <Grid>
-        {data.map((acc) => (
-          <Grid.Col key={acc.id} xs={12} md={4} lg={3}>
-            <AccountInfoCard {...acc} />
-          </Grid.Col>
-        ))}
-      </Grid>
+      <Link href="company/B8OBTrHtBtNnnWeS3xiO">Raghav Goyal</Link>
     </Stack>
   );
 }

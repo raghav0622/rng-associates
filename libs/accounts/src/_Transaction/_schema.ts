@@ -1,14 +1,13 @@
-import dayjs from 'dayjs';
 import { z } from 'zod';
 
 export const TransactionType = ['CR', 'DR'] as const;
 
-export const LinkType = ['account', 'ledger'] as const;
+export const LinkType = ['account', 'ledger', 'none'] as const;
 
-export const TransactionSchema = z
+export const AccountTransactionSchema = z
   .object({
     id: z.string(),
-    date: z.string().transform((string) => dayjs(string).toDate()),
+    date: z.date(),
     particular: z
       .string()
       .min(1)
@@ -24,29 +23,34 @@ export const TransactionSchema = z
 
     type: z.enum(TransactionType),
 
-    amount: z.number(),
+    amount: z.number().refine((n) => n > 0, 'Please enter valid amount'),
 
     ref: z.string().min(1),
-    refOrder: z.number(),
-    refPreviousBalance: z.number(),
-    refNextBalance: z.number(),
-
-    link: z.string().min(1),
+    link: z
+      .string()
+      .min(1)
+      .optional()
+      .or(z.literal('').transform((t) => undefined)),
     linkType: z.enum(LinkType),
-    linkOrder: z.number(),
-    linkPreviousBalance: z.number(),
-    linkNextBalance: z.number(),
+
+    order: z.number(),
+    prevBalance: z.number(),
+    nextBalance: z.number(),
   })
   .strict();
 
-export type Transaction = z.infer<typeof TransactionSchema>;
+export type AccountTransaction = z.infer<typeof AccountTransactionSchema>;
 
-export const CreateTransactionSchema = TransactionSchema.omit({
-  id: true,
-  refNextBalance: true,
-  linkOrder: true,
-  linkPreviousBalance: true,
-  linkNextBalance: true,
+export const TransactionLinkSchema = AccountTransactionSchema.omit({
+  order: true,
+  prevBalance: true,
+  nextBalance: true,
 });
 
-export type CreateTransaction = z.infer<typeof CreateTransactionSchema>;
+export type TransactionLink = z.infer<typeof TransactionLinkSchema>;
+
+export const CreateTransactionLink = TransactionLinkSchema.omit({
+  id: true,
+});
+
+export type CreateTransactionLink = z.infer<typeof CreateTransactionLink>;

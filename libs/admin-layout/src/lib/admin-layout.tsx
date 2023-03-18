@@ -1,27 +1,27 @@
-import { DatesProvider } from '@mantine/dates';
 import 'dayjs/locale/en-in';
 
 import { Box, MantineProvider } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
-import AdminDrawer from './helpers/admin-drawer';
+import AsideMenu from './helpers/admin-aside';
 import AdminHeader from './helpers/admin-header';
-import AdminNavbar from './helpers/admin-nav';
 import Content from './helpers/content';
 import { AdminLayoutContext } from './helpers/context';
-import { AdminLayoutProps } from './helpers/types';
+
+export type AdminLayoutProps = {
+  asideMenu: React.ReactNode;
+  header: React.ReactNode;
+};
 
 export const AdminLayout: React.FC<
   React.PropsWithChildren<AdminLayoutProps>
-> = ({ children, appName, navlinks }) => {
+> = ({ children, asideMenu, header }) => {
   const [openNav, { toggle, close }] = useDisclosure(false);
   const isMobile = useMediaQuery('(max-width: 576px)');
 
   return (
     <AdminLayoutContext.Provider
       value={{
-        appName: appName,
-        navlinks: navlinks,
         isMobile,
         mobileNav: {
           close,
@@ -46,24 +46,22 @@ export const AdminLayout: React.FC<
           }),
         }}
       >
-        <DatesProvider settings={{ locale: 'en-in' }}>
-          <Notifications />
-          {/* <RouterTransition /> */}
-          <AdminHeader />
-          <Box
-            sx={{
-              display: 'flex',
-              width: '100vw',
-              maxWidth: '100vw',
-              flexGrow: 1,
-              height: 'calc(100% - 72px)',
-            }}
-          >
-            <AdminNavbar />
-            <Content>{children}</Content>
-          </Box>
-          {isMobile && <AdminDrawer />}
-        </DatesProvider>
+        <Notifications />
+        {/* <RouterTransition /> */}
+        <AdminHeader children={header} />
+        <Box
+          sx={{
+            display: 'flex',
+            width: '100vw',
+            maxWidth: '100vw',
+            flexGrow: 1,
+            height: 'calc(100% - 72px)',
+          }}
+        >
+          <AsideMenu children={asideMenu} />
+          <Content>{children}</Content>
+        </Box>
+        {/* {isMobile && <AdminDrawer />} */}
       </MantineProvider>
     </AdminLayoutContext.Provider>
   );

@@ -1,14 +1,14 @@
 import { useCreateRNGForm, useCreateUISchema } from '@rng-associates/forms';
-import { useEntityCtx } from '../EntityCtx';
 import { APIFormErrorHandler, successNotification } from '../utils';
+import { useCompanyCtx } from '../_Context';
 import { useCreateAccountAPI } from './_api';
 import { AccountType, CreateAccountSchema } from './_schema';
 
 export const useCreateAccountForm = () => {
   const { mutate } = useCreateAccountAPI();
   const {
-    entity: { id: entity },
-  } = useEntityCtx();
+    company: { id: entity },
+  } = useCompanyCtx();
   const createAccountFormUISchema = useCreateUISchema(CreateAccountSchema, [
     {
       name: 'owner',

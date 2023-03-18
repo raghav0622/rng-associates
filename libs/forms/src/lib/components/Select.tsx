@@ -46,8 +46,8 @@ export function Select<Schema extends z.ZodType<any, any>>({
   }, [onChange, render]);
 
   useEffect(() => {
-    if (value === '' || value === undefined) {
-      onChange(null);
+    if (value === undefined || value === null) {
+      onChange('');
     }
   }, [value, onChange]);
 
@@ -59,7 +59,7 @@ export function Select<Schema extends z.ZodType<any, any>>({
           id={givenName}
           name={givenName}
           onChange={(val) => onChange(val)}
-          value={value}
+          value={value === '' ? null : value}
           size="sm"
           error={error?.message}
           label={label}

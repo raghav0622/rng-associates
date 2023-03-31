@@ -12,19 +12,14 @@ import {
 import { groupBy, sortBy } from 'lodash';
 import { useFirestoreCollectionData } from 'reactfire';
 import { z } from 'zod';
-import { useAutoKey } from './_schema';
+import { useAutoKeyResource } from '../schema';
+
+export * from './_account';
+export * from './_company';
+export * from './_transaction';
 
 export const useAutoKeyAPI = () => {
-  const {
-    name,
-    ref,
-    refWithConverter,
-    converter,
-    getRefByID,
-    schema,
-    firestore,
-    firestoreCollectionName,
-  } = useAutoKey();
+  const { ref, getRefByID, schema } = useAutoKeyResource();
 
   const api = {
     async create(
@@ -74,7 +69,7 @@ export const useAutoKeyAPI = () => {
 };
 
 export const useAutoKeyDataGrouped = () => {
-  const { ref, refWithConverter, schema } = useAutoKey();
+  const { ref, refWithConverter, schema } = useAutoKeyResource();
 
   const q = query(ref, orderBy('name', 'asc'));
   const { status, data } = useFirestoreCollectionData(q, { suspense: true });
@@ -84,7 +79,7 @@ export const useAutoKeyDataGrouped = () => {
 };
 
 export const useAutoKeyDataByName = (name: string) => {
-  const { ref, refWithConverter, schema } = useAutoKey();
+  const { ref, refWithConverter, schema } = useAutoKeyResource();
 
   const q = query(ref, where('name', '==', name));
   const { status, data } = useFirestoreCollectionData(q, { suspense: true });

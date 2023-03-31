@@ -16,7 +16,6 @@ export type createResourceProp<Schema extends z.ZodType<any, any>> = Omit<
 export function useCreateResource<Schema extends z.ZodType<any, any>>({
   name,
   schema,
-  firestoreCollectionName,
   firestore,
 }: createResourceProp<Schema>) {
   if (!firestore) {
@@ -29,18 +28,14 @@ export function useCreateResource<Schema extends z.ZodType<any, any>>({
       snap.data(),
   };
 
-  const ref = collection(firestore, firestoreCollectionName);
-  const refWithConverter = collection(
-    firestore,
-    firestoreCollectionName
-  ).withConverter(converter);
+  const ref = collection(firestore, name);
+  const refWithConverter = collection(firestore, name).withConverter(converter);
 
   const getRefByID = (id: string) => doc(refWithConverter, id);
 
   return {
     name,
     schema,
-    firestoreCollectionName,
     converter,
     ref,
     refWithConverter,

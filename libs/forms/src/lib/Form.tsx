@@ -90,13 +90,17 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
           }
         })}
       >
-        <Stack spacing={0}>
-          <Title order={meta.titleOrder ?? 5}>{meta.formTitle}</Title>
-          {meta?.formDescription && <Text fz="md">{meta.formDescription}</Text>}
-        </Stack>
+        {meta?.formTitle && (
+          <Stack spacing={0}>
+            <Title order={meta.titleOrder ?? 5}>{meta.formTitle}</Title>
+            {meta?.formDescription && (
+              <Text fz="md">{meta.formDescription}</Text>
+            )}
+            <Divider />
+          </Stack>
+        )}
         <Stack spacing="md" sx={{ position: 'relative' }}>
           <LoadingOverlay visible={ctx.formState.isSubmitting} />
-          <Divider />
           {/* error handling */}
           {Object.keys(errors).filter((item) => item.startsWith('custom'))
             .length > 0 && (
@@ -124,7 +128,7 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
             {uiSchema.map((formItem, index) => {
               return renderFormItem<Schema>(
                 formItem,
-                `${meta.formTitle}.${formItem.name}`
+                `${name}.${formItem.name}`
               );
             })}
             <Grid.Col span={12}>
@@ -132,7 +136,7 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
                 <Button
                   type="reset"
                   onClick={() => reset(initialValues)}
-                  size={meta.buttonSize || 'sm'}
+                  size={meta?.buttonSize || 'sm'}
                   color="red"
                   variant="subtle"
                 >
@@ -140,7 +144,7 @@ export function RNGForm<Schema extends z.ZodType<any, any>>({
                 </Button>
                 <Button
                   type="submit"
-                  size={meta.buttonSize || 'sm'}
+                  size={meta?.buttonSize || 'sm'}
                   color="blue"
                   variant="outline"
                 >

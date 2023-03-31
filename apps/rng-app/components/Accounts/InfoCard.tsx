@@ -1,5 +1,4 @@
 import {
-  Badge,
   Card,
   createStyles,
   Divider,
@@ -14,6 +13,7 @@ import {
   Account,
   firstoreTimestampToDateString,
   numberToCurrency,
+  useAccountCtx,
   useCompanyCtx,
 } from '@rng-associates/accounts';
 import Link from 'next/link';
@@ -45,11 +45,13 @@ const useStyles = createStyles((theme) => ({
 export function AccountInfoCard(acc: Account) {
   const { classes } = useStyles();
   const { appPath } = useCompanyCtx();
+  const { getCurrentBook } = useAccountCtx();
+  const currentBook = getCurrentBook(acc.id);
   return (
     <Card withBorder radius="md" p="lg" className={classes.card}>
       <Stack spacing="md">
         <Group position="apart" align={'center'}>
-          <Link href={`${appPath}account/${acc.id}`} legacyBehavior>
+          <Link href={`${appPath}/account/${acc.id}`} legacyBehavior>
             <UnstyledButton>
               <Title order={6}>{acc.nickName}</Title>
             </UnstyledButton>
@@ -62,28 +64,33 @@ export function AccountInfoCard(acc: Account) {
             <Text size="sm">Balance</Text>
             <Text size="xs" color="dimmed">
               <>
-                {acc.transactions[acc.transactions.length - 1] === undefined
+                {currentBook?.transactions[
+                  currentBook?.transactions.length - 1
+                ] === undefined
                   ? 'No Tranasction'
                   : 'As on ' +
                     firstoreTimestampToDateString(
-                      acc.transactions[acc.transactions.length - 1].date
+                      currentBook.transactions[
+                        currentBook.transactions.length - 1
+                      ].date
                     )}
               </>
             </Text>
           </Stack>
           <Title order={6}>
             {numberToCurrency(
-              acc.transactions[acc.transactions.length - 1]?.nextBalance || 0,
+              currentBook?.transactions[currentBook.transactions.length - 1]
+                ?.nextBalance || 0,
               true
             )}
           </Title>
         </Group>
-        <Divider />
-        <Group>
+        {/* <Divider /> */}
+        {/* <Group>
           <Badge color="gray" variant={'outline'}>
             {acc.type}
           </Badge>
-        </Group>
+        </Group> */}
       </Stack>
     </Card>
   );

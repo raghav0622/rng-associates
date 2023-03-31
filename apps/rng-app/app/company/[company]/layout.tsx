@@ -1,25 +1,10 @@
 'use client';
 
-import {
-  CompanyProvider,
-  useCompanyCtx,
-  useCreateFYForm,
-} from '@rng-associates/accounts';
+import { CompanyProvider, useCompanyCtx } from '@rng-associates/accounts';
 import { AdminLayout } from '@rng-associates/admin-layout';
 import { usePathname } from 'next/navigation';
 
-import {
-  Badge,
-  Container,
-  Divider,
-  Group,
-  NavLink,
-  Select,
-  SelectItem,
-  Stack,
-  Title,
-} from '@mantine/core';
-import { RNGForm } from '@rng-associates/forms';
+import { Badge, Divider, Group, NavLink } from '@mantine/core';
 import { IconGauge } from '@tabler/icons';
 import Link from 'next/link';
 
@@ -28,18 +13,15 @@ export function AsideMenu() {
   return (
     <>
       <Link href={appPath} legacyBehavior>
-        <NavLink label="Dashboard" icon={<IconGauge size={24} />} />
+        <NavLink label="Company Dashboard" icon={<IconGauge size={24} />} />
       </Link>
-      <Link href={appPath + 'account/create'} legacyBehavior>
+      <Link href={appPath + '/create-account'} legacyBehavior>
         <NavLink label="Create Account" icon={<IconGauge size={24} />} />
       </Link>
-      <Link href={appPath + 'ledger/create'} legacyBehavior>
+      <Link href={appPath + '/ledger/create'} legacyBehavior>
         <NavLink label="Create Ledger" icon={<IconGauge size={24} />} />
       </Link>
       <Divider my="sm" />
-      <Link href={appPath + 'add-fy'} legacyBehavior>
-        <NavLink label="Add F.Y." icon={<IconGauge size={24} />} />
-      </Link>
       <Link href="/" legacyBehavior>
         <NavLink label="Exit Company" icon={<IconGauge size={24} />} />
       </Link>
@@ -49,23 +31,9 @@ export function AsideMenu() {
 
 function Layout({ children }: { children: React.ReactNode }) {
   const {
-    company: { name, fy },
-    fy: appFy,
-    changeFy,
+    company: { name },
+    viewFY,
   } = useCompanyCtx();
-  const props = useCreateFYForm();
-  if (fy.length === 0) {
-    return (
-      <Container size={'xs'}>
-        <Stack pt="lg">
-          <Title order={4} align="center">
-            No Financial Year Created
-          </Title>
-          <RNGForm {...props} />
-        </Stack>
-      </Container>
-    );
-  }
   return (
     <AdminLayout
       asideMenu={<AsideMenu />}
@@ -74,7 +42,10 @@ function Layout({ children }: { children: React.ReactNode }) {
           <Badge variant="gradient" size="xl">
             {name}
           </Badge>
-          <div>
+          <Badge variant="gradient" size="xl">
+            {viewFY.name}
+          </Badge>
+          {/* <div>
             <Select
               placeholder="Pick one"
               w={130}
@@ -92,7 +63,7 @@ function Layout({ children }: { children: React.ReactNode }) {
                 }
               }}
             />
-          </div>
+          </div> */}
         </Group>
       }
     >
@@ -106,9 +77,9 @@ export default function CompanyDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const EntityID = usePathname().split('/')[2];
+  const company = usePathname().split('/')[2];
   return (
-    <CompanyProvider id={EntityID} appPath={`/company/${EntityID}/`}>
+    <CompanyProvider company={company}>
       <Layout>{children}</Layout>
     </CompanyProvider>
   );

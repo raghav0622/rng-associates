@@ -1,45 +1,52 @@
-import { Table } from '@mantine/core';
+import { Button, Table } from '@mantine/core';
 import {
-  AccountTransaction,
+  AccountBook,
   firstoreTimestampToDateString,
   numberToCurrency,
-  useTransactionParse,
+  useRemoveTransactionAPI,
 } from '@rng-associates/accounts';
 
 export type TransactionTableProps = {
-  viewer: string;
-  transactions: AccountTransaction[];
+  accountBook: AccountBook;
 };
 
 export const TransactionTable: React.FC<TransactionTableProps> = ({
-  viewer,
-  transactions,
+  accountBook,
 }) => {
-  const { parseDefaultNarration } = useTransactionParse();
+  const { mutate } = useRemoveTransactionAPI();
   const ths = (
     <tr>
       <th>#</th>
       <th>Date</th>
       <th>Narration</th>
-      <th>Amount</th>
+      <th>DR</th>
+      <th>CR</th>
       <th>Balance</th>
+      <th>Actions</th>
     </tr>
   );
-  const rows = transactions.map((trans) => (
+  const rows = accountBook.transactions.map((trans) => (
     <tr key={trans.id}>
       <td>{trans.order}</td>
       <td>{firstoreTimestampToDateString(trans.date)}</td>
-      <td>
-        {parseDefaultNarration(viewer, trans)} {trans.particular}
-      </td>
-      <td>
-        {numberToCurrency(trans.amount)} {trans.type}
-      </td>
+      <td>{trans.particular}</td>
+      <td>{trans.type === 'DR' ? numberToCurrency(trans.amount) : '-'}</td>
+      <td>{trans.type === 'CR' ? numberToCurrency(trans.amount) : '-'}</td>
       <td>{numberToCurrency(trans.nextBalance, true)}</td>
+      <td>
+        <Button
+          size="xs"
+          onClick={async () => {
+            await mutate(trans);
+          }}
+        >
+          Delete Entry
+        </Button>
+      </td>
     </tr>
   ));
 
-  if (transactions.length === 0) {
+  if (accountBook.transactions.length === 0) {
     return <>No Transactions To Show</>;
   }
 

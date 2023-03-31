@@ -1,15 +1,27 @@
 'use client';
 
-import { Stack, Title } from '@mantine/core';
-import Link from 'next/link';
+import { Grid, Stack, Title } from '@mantine/core';
+import { useCompanyDataByUser } from '@rng-associates/accounts';
+import { CompanyInfoCard } from '../components/Company';
+import { UserLayout } from '../components/Layout';
 
-export default function CompanyDashboard() {
+export default function UserDashboard() {
+  const companies = useCompanyDataByUser('super-user');
+
   return (
-    <Stack>
-      <Title order={6} ml="sm">
-        Wlecome to RNG Accounting
-      </Title>
-      <Link href="company/B8OBTrHtBtNnnWeS3xiO">Raghav Goyal</Link>
-    </Stack>
+    <UserLayout>
+      <Stack>
+        <Title order={6} pl="md">
+          Companies
+        </Title>
+        <Grid>
+          {companies.map((company) => (
+            <Grid.Col xs={12} md={6} lg={3} key={`company-${company.id}`}>
+              <CompanyInfoCard {...company} />
+            </Grid.Col>
+          ))}
+        </Grid>
+      </Stack>
+    </UserLayout>
   );
 }

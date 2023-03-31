@@ -3,7 +3,7 @@
 import { Card, Grid, Stack, Tabs, Title } from '@mantine/core';
 import { useCompanyCtx } from '@rng-associates/accounts';
 import { groupBy, orderBy } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { AccountInfoCard } from '../../../components';
 
 function AccountsList() {
@@ -41,21 +41,23 @@ function AccountsList() {
   );
 }
 
-export default function DashboardPage() {
+export default function CompanyDashboard() {
   return (
-    <Card>
+    <>
       <Tabs defaultValue={'accounts'}>
         <Tabs.List>
           <Tabs.Tab value="accounts">Accounts</Tabs.Tab>
           <Tabs.Tab value="ledgers">Ledgers</Tabs.Tab>
         </Tabs.List>
-        <Tabs.Panel value="accounts" pt="md">
-          <AccountsList />
-        </Tabs.Panel>
-        <Tabs.Panel value="ledgers" pt="md">
-          To implement
-        </Tabs.Panel>
+        <Card mt="md" p="lg">
+          <Tabs.Panel value="accounts">
+            <Suspense fallback={<>Loading Accounts...</>}>
+              <AccountsList />
+            </Suspense>
+          </Tabs.Panel>
+          <Tabs.Panel value="ledgers">To implement</Tabs.Panel>
+        </Card>
       </Tabs>
-    </Card>
+    </>
   );
 }

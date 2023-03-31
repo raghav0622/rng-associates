@@ -26,8 +26,8 @@ export interface RNGFormProps<Schema extends z.ZodType<any, any>>
   schema: Schema;
   initialValues?: RHUseFormProps<z.infer<Schema>>['defaultValues'];
   uiSchema: RNGFormUISchema<Schema>;
-  meta: {
-    formTitle: string;
+  meta?: {
+    formTitle?: string;
     titleOrder?: 1 | 2 | 3 | 4 | 5 | 6;
     formDescription?: string;
     buttonSize?: 'sm' | 'md' | 'lg';

@@ -2,14 +2,14 @@
 import {
   Grid,
   Select as MSelect,
-  SelectItem,
   SelectProps as MSelectProps,
+  SelectItem,
 } from '@mantine/core';
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { z } from 'zod';
 import { BaseItem } from '../types';
-import { useRenderItemLogic } from './_useRenderItemLogic';
+import { useRenderItemLogic } from './useRenderItemLogic';
 
 export type SelectProps<Schema extends z.ZodType<any, any>> = BaseItem<Schema> &
   Omit<MSelectProps, 'name' | 'label' | 'description' | 'type' | 'onCreate'> & {
@@ -63,7 +63,7 @@ export function Select<Schema extends z.ZodType<any, any>>({
           size="sm"
           error={error?.message}
           label={label}
-          description={description}
+          description={description ? description(value) : undefined}
           onCreate={
             rest.creatable && onCreate !== undefined
               ? (query) => {
@@ -78,6 +78,7 @@ export function Select<Schema extends z.ZodType<any, any>>({
               : undefined
           }
           disabled={isSubmitting || rest.disabled}
+          inputWrapperOrder={['label', 'input', 'description', 'error']}
         />
       </Grid.Col>
     );

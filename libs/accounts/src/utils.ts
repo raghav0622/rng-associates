@@ -1,10 +1,17 @@
 import dayjs from 'dayjs';
 
 import { notifications } from '@mantine/notifications';
-import { APIError } from '@rng-associates/firesource';
-import { OnSubmitResult } from '@rng-associates/forms';
-
 import { z } from 'zod';
+import { APIError } from './useCreateResource';
+
+export type OnSubmitResult = {
+  errors:
+    | false
+    | Array<{
+        message: string;
+        path?: string;
+      }>;
+};
 
 export const successNotification = (message: string) =>
   notifications.show({
@@ -111,7 +118,7 @@ export const FinancialYearSchema = z.object({
 
 export type FinancialYear = z.infer<typeof FinancialYearSchema>;
 
-export const numberToCurrency = (num: number, withPostfix?: boolean) => {
+export const currency = (num: number, withPostfix?: boolean) => {
   const postfix = withPostfix ? (num < 0 ? 'DR' : 'CR') : '';
 
   return `${new Intl.NumberFormat('en-in', {
@@ -123,12 +130,12 @@ export const numberToCurrency = (num: number, withPostfix?: boolean) => {
   }).format(num)} ${postfix}`;
 };
 
-export const firstoreTimestampToDateString = (date: Date) => {
+export const fireDateString = (date: Date) => {
   //@ts-expect-error timestamp to date
   return dayjs(date.toDate()).format('DD-MM-YYYY');
 };
 
-export const firstoreTimestampToDate = (date: Date) => {
+export const fireDate = (date: Date) => {
   //@ts-expect-error timestamp to date
   return date.toDate();
 };

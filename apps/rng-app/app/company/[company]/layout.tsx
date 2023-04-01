@@ -18,7 +18,7 @@ export function AsideMenu() {
       <Link href={appPath + '/create-account'} legacyBehavior>
         <NavLink label="Create Account" icon={<IconGauge size={24} />} />
       </Link>
-      <Link href={appPath + '/ledger/create'} legacyBehavior>
+      <Link href={appPath + '/create-ledger'} legacyBehavior>
         <NavLink label="Create Ledger" icon={<IconGauge size={24} />} />
       </Link>
       <Divider my="sm" />

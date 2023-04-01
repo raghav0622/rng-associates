@@ -3,10 +3,9 @@ import { addDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { useTransactionEntryResource } from '../resource';
 import { CreateTransaction, Transaction, TransactionEtry } from '../schema';
 import { cleanEmpty } from '../utils';
-import {
-  useAddTransactionInAccountAPI,
-  useRemoveTransactionInAccountAPI,
-} from './_account';
+import { useRemoveEntryInAccount } from './_account';
+import { useAddEntry } from './_entries';
+import { useRemoveEntryInLedger } from './_ledger';
 
 export const useTransactionEntryAPI = () => {
   const { ref, refWithConverter, getRefByID } = useTransactionEntryResource();
@@ -31,33 +30,25 @@ export const useTransactionEntryAPI = () => {
 };
 
 export const useCreateTransactionAPI = () => {
-  const { mutate: addTransactionInAccount } = useAddTransactionInAccountAPI();
+  const { mutate: addTransactionInAccount } = useAddEntry('Account');
+  const { mutate: addTransactionInLedger } = useAddEntry('Ledger');
   const { create } = useTransactionEntryAPI();
   const mutate = async (payload: CreateTransaction) => {
-    const sanitizedPayload = cleanEmpty({
-      ...payload,
-      particular: payload.particular || '',
-      bankNarration: payload.bankNarration || '',
-      linkType: payload.linkType || 'no-link',
-      linkBook: payload.linkType !== 'no-link' && payload.book,
-      linkRef: payload.linkType !== 'no-link' && payload.linkRef,
-    }) as CreateTransaction;
-
-    const { id } = await create(sanitizedPayload);
+    const { id } = await create(cleanEmpty(payload));
 
     await addTransactionInAccount({ ...payload, id });
 
-    if (
-      sanitizedPayload.linkType === 'account-to-account' &&
-      sanitizedPayload.linkRef
-    ) {
+    if (payload.linkType === 'account-to-account' && payload.linkRef) {
       await addTransactionInAccount({
         ...payload,
         id,
-        account: sanitizedPayload.linkRef,
-        linkRef: sanitizedPayload.account,
-        type: sanitizedPayload.type === 'CR' ? 'DR' : 'CR',
+        account: payload.linkRef,
+        linkRef: payload.account,
+        type: payload.type === 'CR' ? 'DR' : 'CR',
       });
+    }
+    if (payload.linkType === 'account-to-ledger' && payload.linkRef) {
+      await addTransactionInLedger({ ...payload, id });
     }
   };
 
@@ -65,17 +56,22 @@ export const useCreateTransactionAPI = () => {
 };
 
 export const useRemoveTransactionAPI = () => {
-  const { mutate: removeTransactionInAccount } =
-    useRemoveTransactionInAccountAPI();
+  const { mutate: removeTransactionInAccount } = useRemoveEntryInAccount();
+  const { mutate: removeTransactionInLedger } = useRemoveEntryInLedger();
   const { remove } = useTransactionEntryAPI();
 
   const mutate = async (payload: Transaction) => {
-    await remove(payload);
-
     await removeTransactionInAccount(payload.account, payload.id);
+
     if (payload.linkType === 'account-to-account' && payload.linkRef) {
       await removeTransactionInAccount(payload.linkRef, payload.id);
     }
+
+    if (payload.linkType === 'account-to-ledger' && payload.linkRef) {
+      await removeTransactionInLedger(payload.linkRef, payload.id);
+    }
+
+    await remove(payload);
   };
 
   return { mutate };

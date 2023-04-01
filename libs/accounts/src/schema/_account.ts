@@ -1,18 +1,9 @@
 import { z } from 'zod';
-import {
-  date,
-  FinancialYearSchema,
-  number,
-  optionalNumber,
-  optionalString,
-  string,
-} from '../utils';
+import { date, number, optionalNumber, optionalString, string } from '../utils';
 import { TransactionSchema } from './_transaction';
 
 export const AccountBookSchema = z.object({
   id: string,
-  order: number,
-  fy: FinancialYearSchema, //financial year
   withdrawls: number,
   deposits: number,
   transactions: z.array(TransactionSchema),

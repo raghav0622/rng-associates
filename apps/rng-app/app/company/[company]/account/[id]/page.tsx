@@ -1,15 +1,19 @@
 'use client';
+import { ToWords } from 'to-words';
 
 import { Badge, Card, Group, Stack, Title } from '@mantine/core';
 import {
   APIFormErrorHandler,
   CreateTransaction,
   CreateTransactionSchema,
-  firstoreTimestampToDate,
+  currency,
+  fireDate,
   successNotification,
+  useAccountCtx,
   useAccountOptions,
   useCompanyCtx,
   useCreateTransactionAPI,
+  useLedgerOptions,
 } from '@rng-associates/accounts';
 import { RNGForm, useCreateRNGForm } from '@rng-associates/forms';
 import { PathValue } from 'react-hook-form';
@@ -31,7 +35,16 @@ function CreateTransactionForm({
   const { viewFY } = useCompanyCtx();
   const { mutate } = useCreateTransactionAPI();
   const accOptions = useAccountOptions().filter((a) => a.value !== account);
-
+  const ledgerOptions = useLedgerOptions();
+  const toWords = new ToWords({
+    localeCode: 'en-IN',
+    converterOptions: {
+      currency: true,
+      ignoreDecimal: false,
+      ignoreZeroCurrency: false,
+      doNotAddOnly: false,
+    },
+  });
   const props = useCreateRNGForm(CreateTransactionSchema, {
     name: 'create-transaction-form',
     initialValues: {
@@ -72,8 +85,17 @@ function CreateTransactionForm({
               (acc) => acc.value === link
             ).length > 0;
 
+          const isLedger =
+            ledgerOptions.filter(
+              //@ts-expect-error samjhauga
+              (acc) => acc.value === link
+            ).length > 0;
+
           if (isAccount) {
             return 'account-to-account';
+          }
+          if (isLedger) {
+            return 'account-to-ledger';
           }
           return 'no-link';
         },
@@ -82,8 +104,8 @@ function CreateTransactionForm({
         type: 'date',
         name: 'date',
         label: 'Date',
-        minDate: firstoreTimestampToDate(viewFY.start),
-        maxDate: firstoreTimestampToDate(viewFY.end),
+        minDate: fireDate(viewFY.start),
+        maxDate: fireDate(viewFY.end),
         colProps: {
           lg: 2,
         },
@@ -92,7 +114,7 @@ function CreateTransactionForm({
         name: 'linkRef',
         type: 'select',
         label: 'Link Account / Ledger',
-        data: [...accOptions],
+        data: [...accOptions, ...ledgerOptions],
         clearable: true,
         searchable: true,
 
@@ -102,6 +124,9 @@ function CreateTransactionForm({
         type: 'number',
         name: 'amount',
         label: 'Amount',
+        description: (value: number) => {
+          return value > 0 && value !== Infinity ? toWords.convert(value) : '';
+        },
         colProps: {
           lg: 4,
         },
@@ -166,28 +191,38 @@ function CreateTransactionForm({
 }
 
 export default function AccountPage({ params: { id } }: AccountPageProps) {
-  const { accounts, viewFY } = useCompanyCtx();
-  const account = accounts.find((e) => e.id === id);
-  const book = account?.books.find((val) => val.id === viewFY.name);
-  if (account === undefined) {
+  const { viewFY } = useCompanyCtx();
+  const { getTransactionData } = useAccountCtx();
+
+  const transactionData = getTransactionData(id);
+
+  if (transactionData === undefined) {
     return <>Error 404!</>;
   }
+
+  const { data: account, currentBook, count } = transactionData;
 
   return (
     <>
       <Stack>
         <Card>
-          <Stack>
-            <Title order={3}>Account: {account.nickName}</Title>
+          <Group position="apart">
+            <Title order={3}>{account.nickName}</Title>
             <Group>
               <Badge size="lg" variant="filled" color="blue">
-                A/c Type: {account.type}
+                Deposits: {currency(currentBook.deposits)}
+              </Badge>
+              <Badge size="lg" variant="filled" color="blue">
+                Withdrawls: {currency(currentBook.withdrawls)}
+              </Badge>
+              <Badge size="lg" variant="filled" color="blue">
+                Count: {count}
               </Badge>
             </Group>
-          </Stack>
+          </Group>
         </Card>
         <CreateTransactionForm account={account.id} book={viewFY.name} />
-        {book && <TransactionTable accountBook={book} />}
+        <TransactionTable type="Account" refrence={account.id} />
       </Stack>
     </>
   );

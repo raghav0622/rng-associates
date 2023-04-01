@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { z } from 'zod';
 import { BaseItem } from '../types';
-import { useRenderItemLogic } from './_useRenderItemLogic';
+import { useRenderItemLogic } from './useRenderItemLogic';
 
 export type HiddenInputProps<Schema extends z.ZodType<any, any>> = Pick<
   BaseItem<Schema>,

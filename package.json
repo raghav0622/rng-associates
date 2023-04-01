@@ -2,7 +2,17 @@
   "name": "rng-associates",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build:firesource": "npx nx build firesource --with-deps --skip-nx-cache --buildableProjectDepsInPackageJsonType=dependencies --compiler=babel --format=esm",
+    "build:accounts": "npx nx build accounts --with-deps --skip-nx-cache --buildableProjectDepsInPackageJsonType=dependencies --compiler=babel --format=esm",
+    "build:forms": "npx nx build forms --with-deps --skip-nx-cache --buildableProjectDepsInPackageJsonType=dependencies --compiler=babel --format=esm",
+    "build:admin-layout": "npx nx build admin-layout --with-deps --skip-nx-cache --buildableProjectDepsInPackageJsonType=dependencies --compiler=babel --format=esm",
+    "publish:accounts": "npm run build:accounts & (cd dist & cd libs & cd accounts) & npm publish --access=public",
+    "publish:firesource": "npm run build:firesource & (cd dist & cd libs & cd firesource) & npm publish --access=public",
+    "publish:forms": "npm run build:forms & (cd dist & cd libs & cd forms) & npm publish --access=public",
+    "publish:admin-layout": "npm run build:admin-layout & (cd dist & cd libs & cd admin-layout) & npm publish --access=public",
+    "publish:all": "npm run publish:accounts & npm run publish:firesource & npm run publish:admin-layout & npm run publish:forms"
+  },
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -21,6 +31,7 @@
     "@mantine/spotlight": "^6.0.0",
     "@mantine/tiptap": "^6.0.0",
     "@nrwl/next": "15.8.3",
+    "@rng-associates/firesource": ".",
     "@tabler/icons": "^1.119.0",
     "@tabler/icons-react": "^2.7.0",
     "@tiptap/extension-link": "^2.0.0-beta.220",
@@ -36,6 +47,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.2",
     "reactfire": "^4.2.2",
+    "to-words": "^3.5.0",
     "tslib": "^2.3.0",
     "zod": "^3.20.6"
   },
@@ -84,4 +96,3 @@
     "typescript": "4.9.5"
   }
 }
-

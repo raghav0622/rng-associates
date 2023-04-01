@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { z } from 'zod';
 import { BaseItem } from '../types';
-import { useRenderItemLogic } from './_useRenderItemLogic';
+import { useRenderItemLogic } from './useRenderItemLogic';
 
 export type NumberInputProps<Schema extends z.ZodType<any, any>> =
   BaseItem<Schema> &
@@ -63,8 +63,9 @@ export function NumberInput<Schema extends z.ZodType<any, any>>({
           size="sm"
           error={error?.message}
           label={label}
-          description={description}
+          description={description ? description(value) : undefined}
           hideControls={hideControls}
+          inputWrapperOrder={['label', 'input', 'description', 'error']}
           {...rest}
         />
       </Grid.Col>

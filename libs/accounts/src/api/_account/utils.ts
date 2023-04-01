@@ -9,68 +9,44 @@ import { Account, AccountBook, Transaction } from '../../schema';
 export const useAccountCtx = () => {
   const { accounts, viewFY } = useCompanyCtx();
 
-  const getAccountByID = (id: string) => {
-    return accounts.find((val) => val.id === id);
-  };
+  const getTransactionData = (
+    account: string
+  ):
+    | {
+        data: Account;
+        currentBook: AccountBook;
+        allBooks: AccountBook[];
+        lastTransaction: Transaction | undefined;
+        firstTransaction: Transaction | undefined;
+        transactions: Transaction[];
+        count: number;
+      }
+    | undefined => {
+    const accountData = accounts.find((val) => val.id === account);
 
-  const getCurrentBook = (account: string) => {
-    const book = getAccountByID(account)?.books.find(
+    const currentBook = accountData?.books.find(
       (val) => val.id === viewFY.name
     );
-    return book;
-  };
+    if (!accountData || !currentBook) {
+      return undefined;
+    }
 
-  return { getAccountByID, getCurrentBook };
-};
-
-export const useAccountUtils = () => {
-  // const transposeTransactionLink = (payload: TransactionLink) => {
-  //   return {
-  //     ...payload,
-  //     link: payload.ref,
-  //     narration: '',
-  //     ref: payload.link,
-  //     type: payload.type === 'CR' ? 'DR' : 'CR',
-  //   } as TransactionLink;
-  // };
-
-  const reCalculateEntries = (
-    trans: Transaction[]
-  ): Pick<AccountBook, 'deposits' | 'withdrawls' | 'transactions'> => {
-    const transactions: Transaction[] = [];
-    const deposits = 0;
-    const withdrawls = 0;
-
-    trans.forEach((entry, index) => {
-      const previousEntry = transactions[index - 1];
-      const previousBalance = index === 0 ? 0 : previousEntry?.nextBalance;
-      const nextBalance =
-        entry.type === 'CR'
-          ? previousBalance + entry.amount
-          : previousBalance - entry.amount;
-      const order = index + 1;
-
-      const t = {
-        ...entry,
-        nextBalance,
-        previousBalance,
-        order,
-      } as Transaction;
-
-      return transactions.push(t);
-    });
+    const count = currentBook.transactions.length;
+    const lastTransaction =
+      count > 0 ? currentBook.transactions[count - 1] : undefined;
+    const firstTransaction = currentBook.transactions[0] || undefined;
 
     return {
-      transactions,
-      deposits,
-      withdrawls,
+      data: accountData,
+      currentBook,
+      allBooks: accountData.books,
+      count,
+      firstTransaction,
+      lastTransaction,
+      transactions: currentBook.transactions,
     };
   };
-
-  return {
-    // transposeTransactionLink,
-    reCalculateEntries,
-  };
+  return { getTransactionData };
 };
 
 export const useAccountOptions = () => {
@@ -80,7 +56,7 @@ export const useAccountOptions = () => {
     return {
       value: acc.id,
       label: acc.nickName,
-      group: 'Accounts',
+      group: acc.type,
     } as SelectItem;
   });
 

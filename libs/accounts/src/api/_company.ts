@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { APIError } from '@rng-associates/firesource';
 import { addDoc, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { useFirestoreCollectionData } from 'reactfire';
 import { useCompanyResource } from '../resource';
 import { Company, CreateCompany } from '../schema';
+import { APIError } from '../useCreateResource';
 
 export const useCreateCompanyAPI = () => {
-  const { ref, getRefByID, schema } = useCompanyResource();
+  const { ref, getRefByID } = useCompanyResource();
 
   const data = useCompanyDataByUser('super-user');
 

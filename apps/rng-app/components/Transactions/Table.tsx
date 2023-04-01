@@ -1,19 +1,36 @@
 import { Button, Table } from '@mantine/core';
 import {
-  AccountBook,
-  firstoreTimestampToDateString,
-  numberToCurrency,
+  currency,
+  fireDateString,
+  useAccountCtx,
+  useEntryUtils,
+  useLedgerCtx,
   useRemoveTransactionAPI,
 } from '@rng-associates/accounts';
 
 export type TransactionTableProps = {
-  accountBook: AccountBook;
+  refrence: string;
+  type: 'Account' | 'Ledger';
 };
 
 export const TransactionTable: React.FC<TransactionTableProps> = ({
-  accountBook,
+  refrence,
+  type,
 }) => {
+  const { getTransactionData: getAccountData } = useAccountCtx();
+  const { getTransactionData: getLedgerData } = useLedgerCtx();
+
+  const { parseEntryToString } = useEntryUtils();
   const { mutate } = useRemoveTransactionAPI();
+  const data =
+    type === 'Account' ? getAccountData(refrence) : getLedgerData(refrence);
+
+  if (!data) {
+    return <></>;
+  }
+
+  const { currentBook } = data;
+
   const ths = (
     <tr>
       <th>#</th>
@@ -25,14 +42,19 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
       <th>Actions</th>
     </tr>
   );
-  const rows = accountBook.transactions.map((trans) => (
+  const rows = currentBook.transactions.map((trans) => (
     <tr key={trans.id}>
       <td>{trans.order}</td>
-      <td>{firstoreTimestampToDateString(trans.date)}</td>
-      <td>{trans.particular}</td>
-      <td>{trans.type === 'DR' ? numberToCurrency(trans.amount) : '-'}</td>
-      <td>{trans.type === 'CR' ? numberToCurrency(trans.amount) : '-'}</td>
-      <td>{numberToCurrency(trans.nextBalance, true)}</td>
+      <td>{fireDateString(trans.date)}</td>
+      <td>
+        {type === 'Account'
+          ? //@ts-expect-error yolo
+            parseEntryToString(trans, data.data)
+          : trans.particular}
+      </td>
+      <td>{trans.type === 'DR' ? currency(trans.amount) : '-'}</td>
+      <td>{trans.type === 'CR' ? currency(trans.amount) : '-'}</td>
+      <td>{currency(trans.nextBalance, true)}</td>
       <td>
         <Button
           size="xs"
@@ -46,7 +68,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
     </tr>
   ));
 
-  if (accountBook.transactions.length === 0) {
+  if (currentBook.transactions.length === 0) {
     return <>No Transactions To Show</>;
   }
 

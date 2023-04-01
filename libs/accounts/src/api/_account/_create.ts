@@ -3,29 +3,22 @@ import { addDoc, updateDoc } from 'firebase/firestore';
 import { useCompanyCtx } from '../../context';
 import { useAccountResource } from '../../resource';
 import { Account, CreateAccount } from '../../schema';
+import { cleanEmpty } from '../../utils';
 
-export const useCreateAccountAPI = () => {
+export const useCreateAccount = () => {
   const { ref, getRefByID } = useAccountResource();
   const { viewFY } = useCompanyCtx();
 
   const mutate = async (payload: CreateAccount) => {
-    const { company, nickName, type, accountNumber, bankName, ifsc } = payload;
-
+    console.log(payload);
     const { id: uid } = await addDoc(ref, {
       id: 'auto',
-      company,
-      nickName,
-      type,
-      accountNumber: accountNumber || '',
-      bankName: bankName || '',
-      ifsc: ifsc || '',
+      ...cleanEmpty(payload),
       books: [
         {
           deposits: 0,
           withdrawls: 0,
-          fy: viewFY,
           id: viewFY.name,
-          order: 0,
           transactions: [],
         },
       ],

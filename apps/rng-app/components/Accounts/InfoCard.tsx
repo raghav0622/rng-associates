@@ -11,8 +11,8 @@ import {
 } from '@mantine/core';
 import {
   Account,
-  firstoreTimestampToDateString,
-  numberToCurrency,
+  currency,
+  fireDateString,
   useAccountCtx,
   useCompanyCtx,
 } from '@rng-associates/accounts';
@@ -45,8 +45,14 @@ const useStyles = createStyles((theme) => ({
 export function AccountInfoCard(acc: Account) {
   const { classes } = useStyles();
   const { appPath } = useCompanyCtx();
-  const { getCurrentBook } = useAccountCtx();
-  const currentBook = getCurrentBook(acc.id);
+  const { getTransactionData } = useAccountCtx();
+
+  const data = getTransactionData(acc.id);
+
+  if (!data) return null;
+
+  const { currentBook } = data;
+
   return (
     <Card withBorder radius="md" p="lg" className={classes.card}>
       <Stack spacing="md">
@@ -69,7 +75,7 @@ export function AccountInfoCard(acc: Account) {
                 ] === undefined
                   ? 'No Tranasction'
                   : 'As on ' +
-                    firstoreTimestampToDateString(
+                    fireDateString(
                       currentBook.transactions[
                         currentBook.transactions.length - 1
                       ].date
@@ -78,7 +84,7 @@ export function AccountInfoCard(acc: Account) {
             </Text>
           </Stack>
           <Title order={6}>
-            {numberToCurrency(
+            {currency(
               currentBook?.transactions[currentBook.transactions.length - 1]
                 ?.nextBalance || 0,
               true

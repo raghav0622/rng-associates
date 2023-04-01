@@ -7,10 +7,14 @@ import { RNGFormUISchema } from './Components';
 export type BaseItem<Schema extends z.ZodType<any, any>> = {
   name: Path<z.infer<Schema>>;
   label: string;
-  description?: string;
+  description?: (value: any) => string;
   renderLogic?: (formData: z.infer<Schema>) => Promise<boolean>;
 } & { colProps?: ColProps };
 
+export type ErrorArray = Array<{
+  message: string;
+  path?: string;
+}>;
 export type OnSubmitResult = {
   errors:
     | false

@@ -9,7 +9,7 @@ import {
 } from 'react-hook-form';
 import { z } from 'zod';
 import { BaseItem } from '../types';
-import { useRenderItemLogic } from './_useRenderItemLogic';
+import { useRenderItemLogic } from './useRenderItemLogic';
 
 export type DependentFieldProps<Schema extends z.ZodType<any, any>> =
   BaseItem<Schema> &

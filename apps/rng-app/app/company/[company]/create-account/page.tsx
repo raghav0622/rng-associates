@@ -8,12 +8,12 @@ import {
   useAutoKeyAPI,
   useAutoKeySelectOption,
   useCompanyCtx,
-  useCreateAccountAPI,
+  useCreateAccount,
 } from '@rng-associates/accounts';
 import { RNGForm, useCreateRNGForm } from '@rng-associates/forms';
 
 export default function CreateAccountPage() {
-  const { mutate } = useCreateAccountAPI();
+  const { mutate } = useCreateAccount();
   const { create: createAutoKey } = useAutoKeyAPI();
   const { company } = useCompanyCtx();
   const accountTypeData = useAutoKeySelectOption('account-type');
@@ -38,7 +38,7 @@ export default function CreateAccountPage() {
       {
         type: 'text',
         name: 'nickName',
-        label: 'Account Nick Name',
+        label: 'Nick Name',
       },
       {
         type: 'select',
@@ -74,17 +74,20 @@ export default function CreateAccountPage() {
       {
         type: 'text',
         name: 'bankName',
-        label: 'Bank Name (if any)',
+        label: 'Bank Name',
+        renderLogic: async (i) => i.type !== 'Cash',
       },
       {
         type: 'text',
         name: 'accountNumber',
         label: 'A/c Number (if any)',
+        renderLogic: async (i) => i.type !== 'Cash',
       },
       {
         type: 'text',
         name: 'ifsc',
         label: 'IFSC Code (if any)',
+        renderLogic: async (i) => i.type !== 'Cash',
       },
     ],
     onSubmit: async (values) => {
@@ -98,6 +101,27 @@ export default function CreateAccountPage() {
             ],
           };
         }
+        // if (values.type !== 'Cash') {
+        //   const errors: ErrorArray = [];
+        //   if (!values.bankName) {
+        //     errors.push({ message: 'Provide Bank Name', path: 'bankName' });
+        //   }
+        //   if (!values.accountNumber) {
+        //     errors.push({
+        //       message: 'Provide Account Number',
+        //       path: 'accountNumber',
+        //     });
+        //   }
+        //   if (!values.ifsc) {
+        //     errors.push({ message: 'Provide IFSC for Bank', path: 'ifsc' });
+        //   }
+
+        //   return {
+        //     errors,
+        //   };
+        // }
+        // console.log(values);
+
         await mutate(values);
 
         successNotification(`Account Created: ${values.nickName}`);

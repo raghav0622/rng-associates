@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { z } from 'zod';
 import { BaseItem } from '../types';
-import { useRenderItemLogic } from './_useRenderItemLogic';
+import { useRenderItemLogic } from './useRenderItemLogic';
 
 export type DateInputProps<Schema extends z.ZodType<any, any>> =
   BaseItem<Schema> &
@@ -57,7 +57,8 @@ export function DateInput<Schema extends z.ZodType<any, any>>({
           size="sm"
           error={error?.message}
           label={label}
-          description={description}
+          description={description ? description(value) : undefined}
+          inputWrapperOrder={['label', 'input', 'description', 'error']}
           {...rest}
         />
       </Grid.Col>

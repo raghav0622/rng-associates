@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { useAccountDataByCompany, useCompanyDataID } from '../api';
-import { Account, Company } from '../schema';
+import { useLedgerDataByCompany } from '../api/_ledger/utils';
+import { Account, Company, Ledger } from '../schema';
 import { FinancialYear } from '../utils';
 
 export const CompanyContext = React.createContext<
@@ -9,7 +10,7 @@ export const CompanyContext = React.createContext<
       company: Company;
       accounts: Account[];
       // accountsByFY: Account[];
-      // ledgers: Ledger[];
+      ledgers: Ledger[];
       viewFY: FinancialYear;
       // changeFy: (name: string) => void;
     }
@@ -22,6 +23,7 @@ export const CompanyProvider: React.FC<
   const companyData = useCompanyDataID(id);
 
   const accounts = useAccountDataByCompany(companyData?.id || '');
+  const ledgers = useLedgerDataByCompany(companyData?.id || '');
   if (companyData === undefined) {
     return <>Error 404!</>;
   }
@@ -34,6 +36,7 @@ export const CompanyProvider: React.FC<
         appPath: `/company/${id}`,
         company: companyData,
         accounts: accounts,
+        ledgers: ledgers,
         viewFY: defaultFY[defaultFY.length - 1],
       }}
     >
